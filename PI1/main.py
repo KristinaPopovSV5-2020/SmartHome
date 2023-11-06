@@ -14,20 +14,18 @@ if __name__ == "__main__":
         print("8. Room temperature and humidity sensor")
         print("9. Exit\n\n")
 
-
-        # Korisnik unosi izbor
         option = input("Enter the option number: ")
 
         if option == "1":
-            print("You've selected the door sensor option.")
+            print("You have selected the door sensor option.")
 
         elif option == "2":
-            print("You've selected the door light option.")
+            print("You have selected the door light option.")
             turn_on_ff()
         elif option == "3":
-            print("You've selected the door ultrasonic sensor option.")
+            print("You have selected the door ultrasonic sensor option.")
         elif option == "4":
-            print("You've selected the door buzzer option.")
+            print("You have selected the door buzzer option.")
             while True:
                 pitch_s = input("Enter the pitch: ")
                 if pitch_s.isdigit():
@@ -44,14 +42,14 @@ if __name__ == "__main__":
                     print("This is not a number.")
             emit_sound(pitch, duration)
         elif option == "5":
-            print("You've selected the door motion sensor option.")
+            print("You have selected the door motion sensor option.")
         elif option == "6":
-            print("You've selected the door membrane switch option.")
+            print("You have selected the door membrane switch option.")
         elif option == "7":
-            print("You've selected the room passive infrared sensor option.")
+            print("You have selected the room passive infrared sensor option.")
 
         elif option == "8":
-            print("You've selected the room temperature and humidity sensor.")
+            print("You have selected the room temperature and humidity sensor option.")
 
         elif option == "9":
             print("You have exited the program.")
