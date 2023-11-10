@@ -8,14 +8,14 @@ except:
 
 
 def turn_on(pin):
-    GPIO.setup(pin, GPIO.OUT)
+    #GPIO.setup(pin, GPIO.OUT)
     print("Light on")
-    GPIO.output(pin, GPIO.HIGH)
+    #GPIO.output(pin, GPIO.HIGH)
 
 
 def turn_off(pin):
-    GPIO.setup(pin, GPIO.OUT)
+    #GPIO.setup(pin, GPIO.OUT)
     print("Light off")
-    GPIO.output(pin, GPIO.LOW)
+    #GPIO.output(pin, GPIO.LOW)
 
 

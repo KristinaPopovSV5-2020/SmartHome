@@ -3,7 +3,7 @@
       "pin": 22
     },
     "DL": {
-        "pin": 27
+      "pin": 27
     },
     "DPIR1": {
       "name": "DPIR1",

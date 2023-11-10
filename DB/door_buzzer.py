@@ -7,20 +7,24 @@ except:
     pass
 
 
-
-def setup_gpio():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(BUZZER_PIN, GPIO.OUT)
-
-def buzz(pitch, duration):
+def buzz(pin, pitch, duration):
+    print("Sound on")
+    #GPIO.setup(pin, GPIO.OUT)
     period = 1.0 / pitch
     delay = period / 2
     cycles = int(duration * pitch)
     for i in range(cycles):
-        #GPIO.output(BUZZER_PIN, True)
+        #GPIO.output(pin, True)
         time.sleep(delay)
-        #GPIO.output(BUZZER_PIN, False)
+        #GPIO.output(pin,False)
         time.sleep(delay)
+
+def play_sound(pin):
+    buzz(pin, 440, 0.1)
+
+def stop_sound():
+    print("Sound off")
+
 
 
 
