@@ -1,9 +1,11 @@
-import RPi.GPIO as GPIO
 import time
 
+try:
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BCM)
+except:
+    pass
 
-
-BUZZER_PIN = 17
 
 
 def setup_gpio():
@@ -15,21 +17,10 @@ def buzz(pitch, duration):
     delay = period / 2
     cycles = int(duration * pitch)
     for i in range(cycles):
-        GPIO.output(BUZZER_PIN, True)
+        #GPIO.output(BUZZER_PIN, True)
         time.sleep(delay)
-        GPIO.output(BUZZER_PIN, False)
+        #GPIO.output(BUZZER_PIN, False)
         time.sleep(delay)
 
-def cleanup_gpio():
-    GPIO.cleanup()
 
-def emit_sound(pitch,duration):
-    try:
-        while True:
-            buzz(pitch, duration)
-            time.sleep(1)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        cleanup_gpio()
 

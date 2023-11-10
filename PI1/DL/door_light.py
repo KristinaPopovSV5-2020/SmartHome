@@ -1,37 +1,21 @@
-import RPi.GPIO as GPIO
 import time
 
-LIGHT_PIN = 18
-
-
-def setup_gpio():
+try:
+    import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(LIGHT_PIN, GPIO.OUT)
+except:
+    pass
 
 
-def turn_on():
+def turn_on(pin):
+    GPIO.setup(pin, GPIO.OUT)
     print("Light on")
-    GPIO.output(LIGHT_PIN, GPIO.HIGH)
+    GPIO.output(pin, GPIO.HIGH)
 
 
-def turn_off():
+def turn_off(pin):
+    GPIO.setup(pin, GPIO.OUT)
     print("Light off")
-    GPIO.output(LIGHT_PIN, GPIO.LOW)
+    GPIO.output(pin, GPIO.LOW)
 
 
-def cleanup_gpio():
-    GPIO.cleanup()
-
-
-def turn_on_ff():
-    setup_gpio()
-    try:
-        while True:
-            turn_on()
-            time.sleep(5)
-            turn_off()
-            time.sleep(5)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        cleanup_gpio()
