@@ -5,6 +5,11 @@
     "DL": {
       "pin": 27
     },
+    "DS1": {
+      "name": "DS1",
+      "simulated": true,
+      "pin": 25
+    },
     "DPIR1": {
       "name": "DPIR1",
       "simulated": true,
