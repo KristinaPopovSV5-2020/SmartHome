@@ -5,6 +5,12 @@
     "DL": {
       "pin": 27
     },
+    "DUS1": {
+      "name": "DUS1",
+      "simulated": true,
+      "pin_trig": 5,
+      "pin_echo": 6
+    },
     "DS1": {
       "name": "DS1",
       "simulated": true,
