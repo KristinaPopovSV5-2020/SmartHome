@@ -4,6 +4,7 @@ from DB.door_buzzer import play_sound, stop_sound
 from DL.door_light import turn_on, turn_off
 from components.pir import run_pir
 from components.ds import run_ds
+from components.dus import run_dus
 from settings import load_settings
 
 try:
@@ -27,6 +28,7 @@ if __name__ == "__main__":
     stop_event = threading.Event()
     pi1_settings = load_settings("settings.json")
     ds1_settings = pi1_settings['DS1']
+    dus1_settings = pi1_settings['DUS1']
     dpir1_settings = pi1_settings['DPIR1']
     rpir1_settings = pi1_settings['RPIR1']
     rpir2_settings = pi1_settings['RPIR2']
@@ -55,7 +57,7 @@ if __name__ == "__main__":
             keyboard.add_hotkey('o', lambda: turn_on(dl_settings['pin']))
             keyboard.add_hotkey('x', lambda: turn_off(dl_settings['pin']))
         elif option == "3":
-            print("You have selected the door ultrasonic sensor option.")
+            run_dus(dus1_settings, threads, stop_event)
         elif option == "4":
             db_settings = settings['DB']
             print("You have selected the door buzzer option.")
