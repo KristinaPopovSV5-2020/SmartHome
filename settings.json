@@ -1,0 +1,18 @@
+{
+    "DB": {
+      "pin": 17
+    },
+    "DL": {
+        "pin": 18
+    },
+    "RDHT1": {
+      "name": "RDH1",
+      "simulated": false,
+      "pin": 23
+    },
+    "RDHT2": {
+      "name": "RDHT2",
+      "simulated": false,
+      "pin": 24
+    }
+}
