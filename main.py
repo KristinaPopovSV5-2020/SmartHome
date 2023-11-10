@@ -1,10 +1,12 @@
-from DL.door_light import turn_on, turn_off
 import keyboard
+import threading
+from PI1.DL.door_light import turn_on, turn_off
+from components.pir import run_pir
 from settings import load_settings
-
 
 try:
     import RPi.GPIO as GPIO
+
     GPIO.setmode(GPIO.BCM)
 except:
     pass
@@ -12,6 +14,11 @@ except:
 if __name__ == "__main__":
     settings = load_settings()
     threads = []
+    stop_event = threading.Event()
+    pi1_settings = load_settings("settings.json")
+    dpir1_settings = pi1_settings['DPIR1']
+    rpir1_settings = pi1_settings['RPIR1']
+    rpir2_settings = pi1_settings['RPIR2']
     while True:
         print("Choose an option:")
         print("1. Door sensor")
@@ -43,11 +50,12 @@ if __name__ == "__main__":
             print("You have selected the door buzzer option.")
 
         elif option == "5":
-            print("You have selected the door motion sensor option.")
+            run_pir(dpir1_settings, threads, stop_event)
         elif option == "6":
             print("You have selected the door membrane switch option.")
         elif option == "7":
-            print("You have selected the room passive infrared sensor option.")
+            run_pir(rpir1_settings, threads, stop_event)
+            run_pir(rpir2_settings, threads, stop_event)
 
         elif option == "8":
             print("You have selected the room temperature and humidity sensor option.")

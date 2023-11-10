@@ -1,8 +1,33 @@
 {
     "DB": {
-      "pin": 17
+      "pin": 22
     },
     "DL": {
-        "pin": 18
+        "pin": 27
+    },
+    "DPIR1": {
+      "name": "DPIR1",
+      "simulated": true,
+      "pin": 17
+    },
+    "RPIR1": {
+      "name": "RPIR1",
+      "simulated": true,
+      "pin": 3
+    },
+    "RPIR2": {
+      "name": "RPIR2",
+      "simulated": true,
+      "pin": 4
+    },
+    "RDHT1": {
+      "name": "RDH1",
+      "simulated": false,
+      "pin": 23
+    },
+    "RDHT2": {
+      "name": "RDHT2",
+      "simulated": false,
+      "pin": 24
     }
 }
