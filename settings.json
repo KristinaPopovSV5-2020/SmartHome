@@ -1,14 +1,18 @@
 {
     "DB": {
       "name": "DB",
+      "simulated": true,
       "pin": 22,
-      "activation": "B"
+      "activation": "b",
+      "pitch": 440,
+      "duration": 0.1
     },
     "DL": {
       "name": "DL",
+      "simulated": true,
       "pin": 27,
-      "activation": "L",
-      "activation_off": "X"
+      "activation": "l",
+      "activation_off": "x"
     },
     "DUS1": {
       "name": "DUS1",

@@ -1,7 +1,8 @@
 import pyautogui
+from pynput import keyboard
 import threading
-from PI1.DB.door_buzzer import play_sound, stop_sound
-from PI1.DL.door_light import turn_on, turn_off
+from PI1.DB.door_buzzer import run_db_on, run_db_off
+from PI1.DL.door_light import run_dl_on,run_dl_off
 from PI1.components.pir import run_pir
 from PI1.components.ds import run_ds
 from PI1.components.dus import run_dus
@@ -16,12 +17,44 @@ try:
 except:
     pass
 
+class KeyState:
+    def __init__(self):
+        pi1_settings = load_settings("settings.json")
+        self.dl_settings = pi1_settings["DL"]
+        self.db_settings = pi1_settings["DB"]
+
+    def on_press(self, key):
+        try:
+            if key.char == self.dl_settings["activation"]:
+                run_dl_on(self.dl_settings)
+            elif key.char == self.dl_settings["activation_off"]:
+                run_dl_off(self.dl_settings)
+            elif key.char == self.db_settings["activation"]:
+                run_db_on(self.db_settings)
+        except AttributeError:
+            pass
+
+    def on_release(self, key):
+        try:
+            if key.char == self.db_settings["activation"]:
+                run_db_off()
+        except AttributeError:
+            pass
+
+
 
 def run_actuators():
-    print("If you want to turn on door light we need to press the keyboard button 'O'\n"
-          "If you want to turn off door light we need to press the keyboard button 'X'\n")
-    print("if you want to hear the sound, we need to hold the keyboard button 'B' \n")
-    pass
+    pi1_settings = load_settings("settings.json")
+    dl_settings = pi1_settings["DL"]
+    db_settings = pi1_settings["DB"]
+    print("If you want to turn on door light we need to press the keyboard button " + dl_settings["activation"] + " \n"
+    "If you want to turn off door light we need to press the keyboard button " +
+          dl_settings["activation_off"])
+    print("if you want to hear the sound, we need to hold the keyboard button " + db_settings["activation"] + " \n")
+    key_state = KeyState()
+    with keyboard.Listener(on_press=key_state.on_press, on_release=key_state.on_release,suppress=True) as listener:
+        listener.join()
+
 
 def run_sensors():
     threads = []
