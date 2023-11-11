@@ -52,6 +52,14 @@
     },
     "DMS": {
       "name": "DMS",
-      "simulated": true
+      "simulated": true,
+      "R1": 25,
+      "R2": 8,
+      "R3": 7,
+      "R4": 1,
+      "C1": 12,
+      "C2": 16,
+      "C3": 20,
+      "C4": 21
     }
 }

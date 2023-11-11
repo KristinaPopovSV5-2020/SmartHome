@@ -29,7 +29,7 @@ def run_dht(settings, threads, stop_event):
         else:
             from PI1.sensors.dht import run_dht_loop, DHT
             print("Starting " + settings["name"] + " loop")
-            dht = DHT(settings['pin'])
+            dht = DHT(settings['pin'],settings["name"])
             dht1_thread = threading.Thread(target=run_dht_loop, args=(dht, 2, dht_callback, stop_event, settings["name"]))
             dht1_thread.start()
             threads.append(dht1_thread)

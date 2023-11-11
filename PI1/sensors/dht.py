@@ -18,7 +18,7 @@ class DHT(object):
     humidity = 0
     temperature = 0
 
-    def __init__(self, name, pin):
+    def __init__(self, pin, name):
         self.pin = pin
         self.name = name
         self.bits = [0, 0, 0, 0, 0]

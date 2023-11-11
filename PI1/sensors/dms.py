@@ -7,15 +7,16 @@ except:
     pass
 
 class DMS(object):
-    R1 = 25
-    R2 = 8
-    R3 = 7
-    R4 = 1
-
-    C1 = 12
-    C2 = 16
-    C3 = 20
-    C4 = 21
+    def __init__(self, r1, r2, r3, r4, c1,c2,c3,c4, name):
+        self.R1 = r1
+        self.R2 = r2
+        self.R3 = r3
+        self.R4 = r4
+        self.C1 = c1
+        self.C2 = c2
+        self.C3 = c3
+        self.C4 = c4
+        self.name = name
 
     def setup_gpio(self):
         GPIO.setwarnings(False)
