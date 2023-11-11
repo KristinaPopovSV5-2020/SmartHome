@@ -1,5 +1,10 @@
 import time
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+
+    GPIO.setmode(GPIO.BCM)
+except:
+    pass
 
 
 def get_distance(TRIG_PIN, ECHO_PIN):

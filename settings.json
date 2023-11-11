@@ -1,9 +1,14 @@
 {
     "DB": {
-      "pin": 22
+      "name": "DB",
+      "pin": 22,
+      "activation": "B"
     },
     "DL": {
-      "pin": 27
+      "name": "DL",
+      "pin": 27,
+      "activation": "L",
+      "activation_off": "X"
     },
     "DUS1": {
       "name": "DUS1",
@@ -32,13 +37,13 @@
       "pin": 4
     },
     "RDHT1": {
-      "name": "RDH1",
-      "simulated": false,
+      "name": "RDHT1",
+      "simulated": true,
       "pin": 23
     },
     "RDHT2": {
       "name": "RDHT2",
-      "simulated": false,
+      "simulated": true,
       "pin": 24
     }
 }
