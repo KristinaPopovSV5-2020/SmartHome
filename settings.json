@@ -49,5 +49,9 @@
       "name": "RDHT2",
       "simulated": true,
       "pin": 24
+    },
+    "DMS": {
+      "name": "DMS",
+      "simulated": true
     }
 }
