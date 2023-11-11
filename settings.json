@@ -1,9 +1,18 @@
 {
     "DB": {
-      "pin": 22
+      "name": "DB",
+      "simulated": true,
+      "pin": 22,
+      "activation": "b",
+      "pitch": 440,
+      "duration": 0.1
     },
     "DL": {
-      "pin": 27
+      "name": "DL",
+      "simulated": true,
+      "pin": 27,
+      "activation": "l",
+      "activation_off": "x"
     },
     "DUS1": {
       "name": "DUS1",
@@ -32,13 +41,13 @@
       "pin": 4
     },
     "RDHT1": {
-      "name": "RDH1",
-      "simulated": false,
+      "name": "RDHT1",
+      "simulated": true,
       "pin": 23
     },
     "RDHT2": {
       "name": "RDHT2",
-      "simulated": false,
+      "simulated": true,
       "pin": 24
     }
 }

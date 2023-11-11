@@ -1,6 +1,6 @@
 import threading
 import time
-from simulators.pir import run_pir_simulator
+from PI1.simulators.pir import run_pir_simulator
 
 
 def pir_callback(motion_detected, name):
@@ -17,7 +17,7 @@ def run_pir(settings, threads, stop_event):
         threads.append(pir_thread)
         print(settings["name"] + " simulator started")
     else:
-        from sensors.pir import run_pir_loop
+        from PI1.sensors.pir import run_pir_loop
         print("Starting " + settings["name"] + " loop")
         pir_thread = threading.Thread(target=run_pir_loop, args=(settings["pin"], pir_callback, stop_event, settings["name"]))
         pir_thread.start()

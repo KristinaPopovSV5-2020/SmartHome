@@ -1,4 +1,9 @@
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+
+    GPIO.setmode(GPIO.BCM)
+except:
+    pass
 
 
 def run_ds_loop(DS_PIN, press_detected, stop_event, name):
