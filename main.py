@@ -8,6 +8,7 @@ from PI1.components.ds import run_ds
 from PI1.components.dus import run_dus
 from settings import load_settings
 from PI1.components.dht import run_dht
+from PI1.components.dms import run_dms
 import time
 
 try:
@@ -69,6 +70,9 @@ def run_sensors():
 
         dpir1_settings = pi1_settings['DPIR1']
         run_pir(dpir1_settings, threads, stop_event)
+
+        dms_settings = pi1_settings['DMS']
+        run_dms(dms_settings, threads, stop_event)
 
         rpir1_settings = pi1_settings['RPIR1']
         run_pir(rpir1_settings, threads, stop_event)
