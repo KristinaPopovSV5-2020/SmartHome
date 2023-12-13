@@ -3,6 +3,7 @@
       "name": "DB",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/foyer/db",
       "pin": 22,
       "activation": "b",
       "pitch": 440,
@@ -12,6 +13,7 @@
       "name": "DL",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/coveredPorch/dl",
       "pin": 27,
       "activation": "l",
       "activation_off": "x"
@@ -51,18 +53,21 @@
       "name": "RDHT1",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/bedroom2/rdht1",
       "pin": 23
     },
     "RDHT2": {
       "name": "RDHT2",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/bedroom3/rdht2",
       "pin": 24
     },
     "DMS": {
       "name": "DMS",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/foyer/dms",
       "R1": 25,
       "R2": 8,
       "R3": 7,
