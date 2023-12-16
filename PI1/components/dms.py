@@ -10,9 +10,9 @@ import time
 
 
 
-dms_batch = []  # prazna lista koja će se koristiti za skladištenje podataka pre nego što budu objavljeni
-publish_data_counter = 0  # Brojač koji prati koliko je vrednosti senzora DHT spremno za objavljivanje
-publish_data_limit = 5  # Ovo je ograničenje koje definiše koliko vrednosti senzora DHT treba biti prikupljeno pre nego što se izvrši objavljivanje.
+dms_batch = []
+publish_data_counter = 0
+publish_data_limit = 5
 counter_lock = threading.Lock()
 
 
@@ -35,7 +35,6 @@ publisher_thread.start()
 
 
 def dms_callback(code, publish_event, dms_settings, verbose=True):
-    print(dms_settings);
     global publish_data_counter, publish_data_limit
     if verbose:
         t = time.localtime()
@@ -60,7 +59,7 @@ def dms_callback(code, publish_event, dms_settings, verbose=True):
 
 def run_dms(settings, threads, stop_event):
     if settings['simulated']:
-        print("Starting " + settings["name"] + " similator")
+        print("Starting " + settings["name"] + " simulator")
         dms_thread = threading.Thread(target=run_dms_simulator, args=(2, dms_callback, stop_event, publish_event, settings))
         dms_thread.start()
         threads.append(dms_thread)

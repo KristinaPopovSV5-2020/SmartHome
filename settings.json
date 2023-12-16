@@ -6,6 +6,7 @@
       "topic": "home/foyer/db",
       "pin": 22,
       "activation": "b",
+      "activation_off": "m",
       "pitch": 440,
       "duration": 0.1
     },
@@ -15,7 +16,7 @@
       "runs_on": "PI1",
       "topic": "home/coveredPorch/dl",
       "pin": 27,
-      "activation": "l",
+      "activation": "o",
       "activation_off": "x"
     },
     "DUS1": {

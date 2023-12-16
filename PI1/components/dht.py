@@ -7,9 +7,9 @@ from broker_settings import HOSTNAME, PORT
 import threading
 import time
 
-dht_batch = []  # prazna lista koja će se koristiti za skladištenje podataka pre nego što budu objavljeni
-publish_data_counter = 0  # Brojač koji prati koliko je vrednosti senzora DHT spremno za objavljivanje
-publish_data_limit = 5  # Ovo je ograničenje koje definiše koliko vrednosti senzora DHT treba biti prikupljeno pre nego što se izvrši objavljivanje.
+dht_batch = []
+publish_data_counter = 0
+publish_data_limit = 5
 counter_lock = threading.Lock()
 
 
@@ -22,7 +22,7 @@ def publisher_task(event, dht_batch):
             publish_data_counter = 0
             dht_batch.clear()
         publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} dht values')
+        print(f'published {publish_data_limit} DHT values')
         event.clear()
 
 
@@ -104,7 +104,7 @@ def dht_callback_sim(humidity, temperature, publish_event, dht_settings, verbose
 
 def run_dht(settings, threads, stop_event):
     if settings['simulated']:
-        print("Starting " + settings["name"] + " similator")
+        print("Starting " + settings["name"] + " simulator")
         dht1_thread = threading.Thread(target=run_dht_simulator,
                                        args=(2, dht_callback_sim, stop_event, publish_event, settings))
         dht1_thread.start()

@@ -8,7 +8,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 app = Flask(__name__)
 
 # InfluxDB Configuration
-token = "RAIp3pQkJ2XgrGiCBnm630gxcCtPvOUmjzoeZqC5lQSYJY8VYMUrFT9k3xkmB5QkvqYrrGUlE_DaEqqolA6Aew=="
+token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
 org = "ftn"
 url = "http://localhost:8086"
 bucket = "iot"
@@ -17,21 +17,18 @@ influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 def on_connect(client, userdata, flags, rc):
     client.subscribe("home/coveredPorch/dl")
     client.subscribe("home/foyer/db")
-    client.subscribe("home/foyer/dms/temperature")
-    client.subscribe("home/foyer/dms/humidity")
-    client.subscribe("home/beedroom2/rdht1")
-    client.subscribe("home/beedroom3/rdht2")
+    client.subscribe("home/foyer/dms")
+    client.subscribe("home/bedroom2/rdht1/humidity")
+    client.subscribe("home/bedroom2/rdht1/temperature")
+    client.subscribe("home/bedroom3/rdht2/humidity")
+    client.subscribe("home/bedroom3/rdht2/temperature")
 
 
-def on_message(client, userdata, msg):
-    print("USAO")
-    payload_data = json.loads(msg.payload.decode('utf-8'))
-    save_to_db(payload_data)
 
 # MQTT Configuration
 mqtt_client = mqtt.Client()
 mqtt_client.on_connect = on_connect
-mqtt_client.on_message = on_message
+mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
 mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
 
@@ -45,7 +42,6 @@ def save_to_db(data):
         .tag("name", data["name"])
         .field("measurement", data["value"])
     )
-    print(point)
     write_api.write(bucket=bucket, org=org, record=point)
 
 
