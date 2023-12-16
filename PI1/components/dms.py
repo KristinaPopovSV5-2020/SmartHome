@@ -25,16 +25,17 @@ def publisher_task(event, dms_batch):
             publish_data_counter = 0
             dms_batch.clear()
         publish.multiple(local_dms_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} dms values')
+        print(f'Published {len(local_dms_batch)} DMS values')
         event.clear()
 
 publish_event = threading.Event()
-publisher_thread = threading.Thread(target=publisher_task, args=(publish_event, dms_batch,))
+publisher_thread = threading.Thread(target=publisher_task, args=(publish_event, dms_batch))
 publisher_thread.daemon = True
 publisher_thread.start()
 
 
 def dms_callback(code, publish_event, dms_settings, verbose=True):
+    print(dms_settings);
     global publish_data_counter, publish_data_limit
     if verbose:
         t = time.localtime()
