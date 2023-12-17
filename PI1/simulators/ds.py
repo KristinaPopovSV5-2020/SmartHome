@@ -7,10 +7,10 @@ def generate_press():
         yield random.choice([True, False])
 
 
-def run_ds_simulator(delay, callback, stop_event, name):
+def run_ds_simulator(delay, callback, stop_event, publish_event, settings):
     pir_motion = generate_press()
     for motion in pir_motion:
         time.sleep(delay)
-        callback(motion, name)
+        callback(motion, publish_event, settings)
         if stop_event.is_set():
             break

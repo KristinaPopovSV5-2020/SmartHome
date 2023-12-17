@@ -23,6 +23,7 @@
       "name": "DUS1",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/coveredPorch/dus1",
       "pin_trig": 5,
       "pin_echo": 6
     },
@@ -30,24 +31,28 @@
       "name": "DS1",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/foyer/ds1",
       "pin": 25
     },
     "DPIR1": {
       "name": "DPIR1",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/coveredPorch/dpir1",
       "pin": 17
     },
     "RPIR1": {
       "name": "RPIR1",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/foyer/rpir1",
       "pin": 3
     },
     "RPIR2": {
       "name": "RPIR2",
       "simulated": true,
       "runs_on": "PI1",
+      "topic": "home/openRailing/rpir2",
       "pin": 4
     },
     "RDHT1": {

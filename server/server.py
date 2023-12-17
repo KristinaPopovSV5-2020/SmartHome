@@ -14,15 +14,20 @@ url = "http://localhost:8086"
 bucket = "iot"
 influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 
+
 def on_connect(client, userdata, flags, rc):
     client.subscribe("home/coveredPorch/dl")
+    client.subscribe("home/coveredPorch/dus1")
+    client.subscribe("home/coveredPorch/dpir1")
     client.subscribe("home/foyer/db")
     client.subscribe("home/foyer/dms")
+    client.subscribe("home/foyer/ds1")
+    client.subscribe("home/foyer/rpir1")
     client.subscribe("home/bedroom2/rdht1/humidity")
     client.subscribe("home/bedroom2/rdht1/temperature")
     client.subscribe("home/bedroom3/rdht2/humidity")
     client.subscribe("home/bedroom3/rdht2/temperature")
-
+    client.subscribe("home/openRailing/rpir2")
 
 
 # MQTT Configuration
