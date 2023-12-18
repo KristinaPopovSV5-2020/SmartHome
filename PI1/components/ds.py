@@ -20,6 +20,7 @@ def publisher_task(event, ds_batch):
             publish_data_counter = 0
             ds_batch.clear()
         publish.multiple(local_ds_batch, hostname=HOSTNAME, port=PORT)
+        print(local_ds_batch)
         print(f'published {publish_data_limit} ds values')
         event.clear()
 
@@ -50,7 +51,7 @@ def ds_callback(button_press, code, publish_event, ds_settings, verbose=True):
     }
 
     with counter_lock:
-        ds_batch.append((ds_settings['topic'] + "/button_press", json.dumps(button_press_payload), 0, True))
+        ds_batch.append((ds_settings['topic'], json.dumps(button_press_payload), 0, True))
         publish_data_counter += 1
 
     if publish_data_counter >= publish_data_limit:
@@ -74,7 +75,7 @@ def ds_callback_sim(button_press, publish_event, dht_settings, verbose=True):
     }
 
     with counter_lock:
-        ds_batch.append((dht_settings['topic'] + "/button_press", json.dumps(button_press_payload), 0, True))
+        ds_batch.append((dht_settings['topic'], json.dumps(button_press_payload), 0, True))
         publish_data_counter += 1
 
     if publish_data_counter >= publish_data_limit:

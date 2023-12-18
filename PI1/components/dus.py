@@ -22,6 +22,7 @@ def publisher_task(event, dus_batch):
             dus_batch.clear()
         publish.multiple(local_dus_batch, hostname=HOSTNAME, port=PORT)
         print(f'published {publish_data_limit} dus values')
+        print(local_dus_batch)
         event.clear()
 
 
@@ -51,7 +52,7 @@ def dus_callback(distance, code, publish_event, dus_settings, verbose=True):
     }
 
     with counter_lock:
-        dus_settings.append((dus_settings['topic'] + "/distance", json.dumps(distance_payload), 0, True))
+        dus_settings.append((dus_settings['topic'], json.dumps(distance_payload), 0, True))
         publish_data_counter += 1
 
     if publish_data_counter >= publish_data_limit:
@@ -75,7 +76,7 @@ def dus_callback_sim(distance, publish_event, dht_settings, verbose=True):
     }
 
     with counter_lock:
-        dus_batch.append((dht_settings['topic'] + "/distance", json.dumps(distance_payload), 0, True))
+        dus_batch.append((dht_settings['topic'], json.dumps(distance_payload), 0, True))
         publish_data_counter += 1
 
     if publish_data_counter >= publish_data_limit:

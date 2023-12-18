@@ -28,6 +28,7 @@ def publisher_task(event, pir_batch):
             pir_batch.clear()
         publish.multiple(local_pir_batch, hostname=HOSTNAME, port=PORT)
         print(f'published {publish_data_limit} pir values')
+        print(local_pir_batch)
         event.clear()
 
 
@@ -57,7 +58,7 @@ def pir_callback(motion, code, publish_event, pir_settings, verbose=True):
     }
 
     with counter_lock:
-        pir_settings.append((pir_settings['topic'] + "/motion", json.dumps(motion_payload), 0, True))
+        pir_settings.append((pir_settings['topic'], json.dumps(motion_payload), 0, True))
         publish_data_counter += 1
 
     if publish_data_counter >= publish_data_limit:
@@ -81,7 +82,7 @@ def pir_callback_sim(motion, publish_event, pir_settings, verbose=True):
     }
 
     with counter_lock:
-        pir_batch.append((pir_settings['topic'] + "/motion", json.dumps(motion_payload), 0, True))
+        pir_batch.append((pir_settings['topic'], json.dumps(motion_payload), 0, True))
         publish_data_counter += 1
 
     if publish_data_counter >= publish_data_limit:
