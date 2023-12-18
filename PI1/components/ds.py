@@ -20,7 +20,6 @@ def publisher_task(event, ds_batch):
             publish_data_counter = 0
             ds_batch.clear()
         publish.multiple(local_ds_batch, hostname=HOSTNAME, port=PORT)
-        print(local_ds_batch)
         print(f'published {publish_data_limit} ds values')
         event.clear()
 

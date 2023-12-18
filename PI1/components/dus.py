@@ -9,7 +9,7 @@ from PI1.simulators.dus import run_dus_simulator
 
 dus_batch = []
 publish_data_counter = 0
-publish_data_limit = 5
+publish_data_limit = 1
 counter_lock = threading.Lock()
 
 def publisher_task(event, dus_batch):
@@ -22,7 +22,6 @@ def publisher_task(event, dus_batch):
             dus_batch.clear()
         publish.multiple(local_dus_batch, hostname=HOSTNAME, port=PORT)
         print(f'published {publish_data_limit} dus values')
-        print(local_dus_batch)
         event.clear()
 
 
@@ -44,7 +43,7 @@ def dus_callback(distance, code, publish_event, dus_settings, verbose=True):
         print(f"Distance: {distance}%")
 
     distance_payload = {
-        "measurement": "Distance",
+        "measurement": "DUS",
         "simulated": dus_settings['simulated'],
         "runs_on": dus_settings["runs_on"],
         "name": dus_settings["name"],
@@ -65,10 +64,10 @@ def dus_callback_sim(distance, publish_event, dht_settings, verbose=True):
     if verbose:
         t = time.localtime()
         print(
-            f"\nUltranosic sensor {dht_settings['name']} detected movement from" + str(distance) + f"cm at {time.strftime('%H:%M:%S', t)}")
+            f"\nUltranosic sensor {dht_settings['name']} detected movement from " + str(distance) + f"cm at {time.strftime('%H:%M:%S', t)}")
 
     distance_payload = {
-        "measurement": "Distance",
+        "measurement": "DUS",
         "simulated": dht_settings['simulated'],
         "runs_on": dht_settings["runs_on"],
         "name": dht_settings["name"],

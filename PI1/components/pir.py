@@ -28,7 +28,6 @@ def publisher_task(event, pir_batch):
             pir_batch.clear()
         publish.multiple(local_pir_batch, hostname=HOSTNAME, port=PORT)
         print(f'published {publish_data_limit} pir values')
-        print(local_pir_batch)
         event.clear()
 
 
@@ -74,7 +73,7 @@ def pir_callback_sim(motion, publish_event, pir_settings, verbose=True):
             f"\nMotion detected from {pir_settings['name']} at {time.strftime('%H:%M:%S', t)}")
 
     motion_payload = {
-        "measurement": "Distance",
+        "measurement": "Motion",
         "simulated": pir_settings['simulated'],
         "runs_on": pir_settings["runs_on"],
         "name": pir_settings["name"],
