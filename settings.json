@@ -2,57 +2,78 @@
     "DB": {
       "name": "DB",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/foyer/db",
       "pin": 22,
       "activation": "b",
+      "activation_off": "m",
       "pitch": 440,
       "duration": 0.1
     },
     "DL": {
       "name": "DL",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/coveredPorch/dl",
       "pin": 27,
-      "activation": "l",
+      "activation": "o",
       "activation_off": "x"
     },
     "DUS1": {
       "name": "DUS1",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/coveredPorch/d-us1",
       "pin_trig": 5,
       "pin_echo": 6
     },
     "DS1": {
       "name": "DS1",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/foyer/ds1",
       "pin": 25
     },
     "DPIR1": {
       "name": "DPIR1",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/coveredPorch/d-pir1",
       "pin": 17
     },
     "RPIR1": {
       "name": "RPIR1",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/foyer/r-pir1",
       "pin": 3
     },
     "RPIR2": {
       "name": "RPIR2",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/openRailing/r-pir2",
       "pin": 4
     },
     "RDHT1": {
       "name": "RDHT1",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/bedroom2/rdht1",
       "pin": 23
     },
     "RDHT2": {
       "name": "RDHT2",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/bedroom3/rdht2",
       "pin": 24
     },
     "DMS": {
       "name": "DMS",
       "simulated": true,
+      "runs_on": "PI1",
+      "topic": "home/foyer/dms",
       "R1": 25,
       "R2": 8,
       "R3": 7,

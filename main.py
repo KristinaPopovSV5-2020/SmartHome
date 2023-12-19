@@ -1,8 +1,7 @@
-import pyautogui
 from pynput import keyboard
 import threading
-from PI1.DB.door_buzzer import run_db_on, run_db_off
-from PI1.DL.door_light import run_dl_on,run_dl_off
+from PI1.components.dl import run_dl
+from PI1.components.db import run_db
 from PI1.components.pir import run_pir
 from PI1.components.ds import run_ds
 from PI1.components.dus import run_dus
@@ -27,21 +26,16 @@ class KeyState:
     def on_press(self, key):
         try:
             if key.char == self.dl_settings["activation"]:
-                run_dl_on(self.dl_settings)
+                run_dl(self.dl_settings, True)
             elif key.char == self.dl_settings["activation_off"]:
-                run_dl_off(self.dl_settings)
+                run_dl(self.dl_settings, False)
             elif key.char == self.db_settings["activation"]:
-                run_db_on(self.db_settings)
+                run_db(self.db_settings, True)
+            elif key.char == self.db_settings["activation_off"]:
+                run_db(self.db_settings, False)
+
         except AttributeError:
             pass
-
-    def on_release(self, key):
-        try:
-            if key.char == self.db_settings["activation"]:
-                run_db_off()
-        except AttributeError:
-            pass
-
 
 
 def run_actuators():
@@ -51,9 +45,10 @@ def run_actuators():
     print("If you want to turn on door light we need to press the keyboard button " + dl_settings["activation"] + " \n"
     "If you want to turn off door light we need to press the keyboard button " +
           dl_settings["activation_off"])
-    print("if you want to hear the sound, we need to hold the keyboard button " + db_settings["activation"] + " \n")
+    print("if you want to turn on door buzzer, we need to press the keyboard button " + db_settings["activation"])
+    print("if you want to turn off door buzzer, we need to press the keyboard button " + db_settings["activation_off"])
     key_state = KeyState()
-    with keyboard.Listener(on_press=key_state.on_press, on_release=key_state.on_release,suppress=True) as listener:
+    with keyboard.Listener(on_press=key_state.on_press, suppress=True) as listener:
         listener.join()
 
 

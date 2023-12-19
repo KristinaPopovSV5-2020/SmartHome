@@ -11,10 +11,10 @@ def generate_distance():
         yield distance
 
 
-def run_dus_simulator(delay, callback, stop_event, name):
+def run_dus_simulator(delay, callback, stop_event, publish_event, settings):
     dus_distance = generate_distance()
     for distance in dus_distance:
         time.sleep(delay)
-        callback(name, distance)
+        callback(distance, publish_event, settings)
         if stop_event.is_set():
             break
