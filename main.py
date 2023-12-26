@@ -19,7 +19,7 @@ except:
 
 class KeyState:
     def __init__(self):
-        pi1_settings = load_settings("settings.json")
+        pi1_settings = load_settings("settings/settings_PI1.json")
         self.dl_settings = pi1_settings["DL"]
         self.db_settings = pi1_settings["DB"]
 
@@ -39,7 +39,7 @@ class KeyState:
 
 
 def run_actuators():
-    pi1_settings = load_settings("settings.json")
+    pi1_settings = load_settings("settings/settings_PI1.json")
     dl_settings = pi1_settings["DL"]
     db_settings = pi1_settings["DB"]
     print("If you want to turn on door light we need to press the keyboard button " + dl_settings["activation"] + " \n"
@@ -55,7 +55,7 @@ def run_actuators():
 def run_sensors():
     threads = []
     stop_event = threading.Event()
-    pi1_settings = load_settings("settings.json")
+    pi1_settings = load_settings("settings/settings_PI1.json")
     try:
         ds1_settings = pi1_settings['DS1']
         run_ds(ds1_settings, threads, stop_event)
