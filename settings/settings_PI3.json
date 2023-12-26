@@ -2,12 +2,49 @@
   "RPIR4": {
     "name": "RPIR4",
     "simulated": true,
-    "runs_on": "PI1",
-    "topic": "home/foyer/db",
-    "pin": 22,
-    "activation": "b",
-    "activation_off": "m",
-    "pitch": 440,
-    "duration": 0.1
-  }
+    "runs_on": "PI3",
+    "topic": "home/dinette/rpir4",
+    "pin": 4
+  },
+  "RDHT4": {
+      "name": "RDHT4",
+      "simulated": true,
+      "runs_on": "PI3",
+      "topic": "home/owners-suite/rdht4",
+      "pin": 23
+    },
+  "BB": {
+      "name": "BB",
+      "simulated": true,
+      "runs_on": "PI3",
+      "topic": "home/owners-suite/bb",
+      "pin": 22,
+      "activation": "b",
+      "activation_off": "m",
+      "pitch": 440,
+      "duration": 0.1
+    },
+  "B4SD": {
+      "name": "B4SD",
+      "simulated": true,
+      "runs_on": "PI3",
+      "topic": "home/owners-suite/b4sd",
+      "segments": [11,4,23,8,7,10,18,25],
+     "digits": [22,27,17,24]
+  },
+  "BIR": {
+      "name": "BIR",
+      "simulated": true,
+      "runs_on": "PI3",
+      "topic": "home/owners-suite/bir"
+    },
+  "BRGB": {
+      "name": "BRGB",
+      "simulated": true,
+      "runs_on": "PI3",
+      "topic": "home/owners-suite/brgb",
+      "RED_PIN": 12,
+      "GREEN_PIN": 13,
+      "BLUE_PIN": 19
+    }
 }
