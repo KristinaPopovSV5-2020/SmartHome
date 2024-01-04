@@ -3,5 +3,5 @@ def run_b4sd(settings):
 
         print("Nesto")
     else:
-        from PI1.actuators.RGB import led
+        from devices.actuators.RGB import led
         led(settings)

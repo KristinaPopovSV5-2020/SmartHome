@@ -57,10 +57,10 @@ def b4sd_callback(publish_event, b4sd_settings, verbose=True):
 
 def run_b4sd(settings):
     if settings['simulated']:
-        from PI1.actuators.b4sd import display_simulator
+        from devices.actuators.b4sd import display_simulator
         display_simulator(settings)
         #b4sd_callback(publish_event, settings)
     else:
-        from PI1.actuators.b4sd import display
+        from devices.actuators.b4sd import display
         display(settings)
         #b4sd_callback(publish_event, settings)

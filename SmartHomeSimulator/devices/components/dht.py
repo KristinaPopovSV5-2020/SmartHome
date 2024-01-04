@@ -2,7 +2,7 @@ import json
 
 from paho.mqtt import publish
 
-from PI1.simulators.dht import run_dht_simulator
+from devices.simulators.dht import run_dht_simulator
 from broker_settings import HOSTNAME, PORT
 import threading
 import time
@@ -111,7 +111,7 @@ def run_dht(settings, threads, stop_event):
         threads.append(dht1_thread)
         print(settings["name"] + " sumilator started")
     else:
-        from PI1.sensors.dht import run_dht_loop, DHT
+        from devices.sensors.dht import run_dht_loop, DHT
         print("Starting " + settings["name"] + " loop")
         dht = DHT(settings['pin'], settings["name"])
         dht1_thread = threading.Thread(target=run_dht_loop,

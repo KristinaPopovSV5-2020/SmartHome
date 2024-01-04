@@ -8,7 +8,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 app = Flask(__name__)
 
 # InfluxDB Configuration
-token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
+token = "RAIp3pQkJ2XgrGiCBnm630gxcCtPvOUmjzoeZqC5lQSYJY8VYMUrFT9k3xkmB5QkvqYrrGUlE_DaEqqolA6Aew=="
 org = "ftn"
 url = "http://localhost:8086"
 bucket = "iot"

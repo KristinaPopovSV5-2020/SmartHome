@@ -4,7 +4,7 @@ from paho.mqtt import publish
 from broker_settings import HOSTNAME, PORT
 import threading
 import time
-from PI1.simulators.dus import run_dus_simulator
+from devices.simulators.dus import run_dus_simulator
 
 
 dus_batch = []
@@ -90,7 +90,7 @@ def run_dus(settings, threads, stop_event):
         threads.append(dus1_thread)
         print(settings["name"] + " simulator started")
     else:
-        from PI1.sensors.dus import run_dus_loop, DUS
+        from devices.sensors.dus import run_dus_loop, DUS
         print("Starting " + settings["name"] + " loop")
         dus = DUS(settings['pin'], settings["name"])
         dus1_thread = threading.Thread(target=run_dus_loop,

@@ -4,7 +4,7 @@ from paho.mqtt import publish
 from broker_settings import HOSTNAME, PORT
 import threading
 import time
-from PI1.simulators.pir import run_pir_simulator
+from devices.simulators.pir import run_pir_simulator
 
 
 def pir_callback(motion_detected, name):
@@ -96,7 +96,7 @@ def run_pir(settings, threads, stop_event):
         threads.append(pir1_thread)
         print(settings["name"] + " simulator started")
     else:
-        from PI1.sensors.pir import run_pir_loop, PIR
+        from devices.sensors.pir import run_pir_loop, PIR
         print("Starting " + settings["name"] + " loop")
         pir = PIR(settings['pin'], settings["name"])
         pir1_thread = threading.Thread(target=run_pir_loop,

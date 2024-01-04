@@ -1,13 +1,13 @@
 from pynput import keyboard
 import threading
-from PI1.components.dl import run_dl
-from PI1.components.db import run_db
-from PI1.components.pir import run_pir
-from PI1.components.ds import run_ds
-from PI1.components.dus import run_dus
+from devices.components.dl import run_dl
+from devices.components.db import run_db
+from devices.components.pir import run_pir
+from devices.components.ds import run_ds
+from devices.components.dus import run_dus
 from settings import load_settings
-from PI1.components.dht import run_dht
-from PI1.components.dms import run_dms
+from devices.components.dht import run_dht
+from devices.components.dms import run_dms
 import time
 
 try:

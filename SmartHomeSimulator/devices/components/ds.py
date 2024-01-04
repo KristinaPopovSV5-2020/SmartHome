@@ -4,7 +4,7 @@ from paho.mqtt import publish
 from broker_settings import HOSTNAME, PORT
 import threading
 import time
-from PI1.simulators.ds import run_ds_simulator
+from devices.simulators.ds import run_ds_simulator
 
 ds_batch = []
 publish_data_counter = 0
@@ -89,7 +89,7 @@ def run_ds(settings, threads, stop_event):
         threads.append(ds1_thread)
         print(settings["name"] + " simulator started")
     else:
-        from PI1.sensors.ds import run_ds_loop, DS
+        from devices.sensors.ds import run_ds_loop, DS
         print("Starting " + settings["name"] + " loop")
         ds = DS(settings['pin'], settings["name"])
         ds1_thread = threading.Thread(target=run_ds_loop,

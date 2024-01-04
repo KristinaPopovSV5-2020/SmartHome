@@ -64,6 +64,6 @@ def run_dl(settings, turnOn):
     if settings['simulated']:
         dl_callback(turnOn, publish_event, settings)
     else:
-        from PI1.actuators.door_light import light
+        from devices.actuators.door_light import light
         light(turnOn,settings)
         dl_callback(turnOn, publish_event, settings)

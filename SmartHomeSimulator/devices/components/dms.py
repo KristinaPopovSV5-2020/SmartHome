@@ -3,7 +3,7 @@ import json
 from paho.mqtt import publish
 from broker_settings import HOSTNAME, PORT
 
-from PI1.simulators.dms import run_dms_simulator
+from devices.simulators.dms import run_dms_simulator
 import threading
 import time
 
@@ -65,7 +65,7 @@ def run_dms(settings, threads, stop_event):
         threads.append(dms_thread)
         print(settings["name"] + " sumilator started")
     else:
-        from PI1.sensors.dms import run_dms_loop, DMS
+        from devices.sensors.dms import run_dms_loop, DMS
         print("Starting " + settings["name"] + " loop")
         dms = DMS(settings["R1"], settings["R2"], settings["R3"], settings["R4"], settings["C1"], settings["C2"],
                   settings["C3"], settings["C4"], settings["name"])

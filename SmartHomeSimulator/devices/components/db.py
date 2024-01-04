@@ -64,6 +64,6 @@ def run_db(settings, turnOn):
     if settings['simulated']:
         db_callback(turnOn, publish_event, settings)
     else:
-        from PI1.actuators.door_buzzer import buzz
+        from devices.actuators.door_buzzer import buzz
         buzz(settings, turnOn)
         db_callback(turnOn, publish_event, settings)
