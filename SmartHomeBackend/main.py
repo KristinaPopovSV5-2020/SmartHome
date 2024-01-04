@@ -17,6 +17,13 @@ try:
 except:
     pass
 
+threads = []
+stop_event = threading.Event()
+pi1_location = "settings/settings_PI1.json"
+pi2_location = "settings/settings_PI2.json"
+pi3_location = "settings/settings_PI3.json"
+
+
 class KeyState:
     def __init__(self):
         pi1_settings = load_settings("settings/settings_PI1.json")
@@ -52,43 +59,37 @@ def run_actuators():
         listener.join()
 
 
-def run_sensors():
-    threads = []
-    stop_event = threading.Event()
-    pi1_settings = load_settings("settings/settings_PI1.json")
-    try:
-        ds1_settings = pi1_settings['DS1']
-        run_ds(ds1_settings, threads, stop_event)
+def run_p1():
+    pi1_settings = load_settings(pi1_location)
+    ds1_settings = pi1_settings['DS1']
+    run_ds(ds1_settings, threads, stop_event)
 
-        dus1_settings = pi1_settings['DUS1']
-        run_dus(dus1_settings, threads, stop_event)
+    dus1_settings = pi1_settings['DUS1']
+    run_dus(dus1_settings, threads, stop_event)
 
-        dpir1_settings = pi1_settings['DPIR1']
-        run_pir(dpir1_settings, threads, stop_event)
+    dpir1_settings = pi1_settings['DPIR1']
+    run_pir(dpir1_settings, threads, stop_event)
 
-        dms_settings = pi1_settings['DMS']
-        run_dms(dms_settings, threads, stop_event)
+    dms_settings = pi1_settings['DMS']
+    run_dms(dms_settings, threads, stop_event)
 
-        rpir1_settings = pi1_settings['RPIR1']
-        run_pir(rpir1_settings, threads, stop_event)
+    rpir1_settings = pi1_settings['RPIR1']
+    run_pir(rpir1_settings, threads, stop_event)
 
-        rpir2_settings = pi1_settings['RPIR2']
-        run_pir(rpir2_settings, threads, stop_event)
+    rpir2_settings = pi1_settings['RPIR2']
+    run_pir(rpir2_settings, threads, stop_event)
 
-        rdht1_settings = pi1_settings['RDHT1']
-        run_dht(rdht1_settings, threads, stop_event)
+    rdht1_settings = pi1_settings['RDHT1']
+    run_dht(rdht1_settings, threads, stop_event)
 
-        rdht2_settings = pi1_settings['RDHT2']
-        run_dht(rdht2_settings, threads, stop_event)
-        while True:
-            time.sleep(1)
+    rdht2_settings = pi1_settings['RDHT2']
+    run_dht(rdht2_settings, threads, stop_event)
 
-    except KeyboardInterrupt:
-        print('Stopping app')
-        for t in threads:
-            stop_event.set()
+def run_p2():
+    pi2_settings = load_settings(pi2_location)
 
-
+def run_p3():
+    pi3_settings = load_settings(pi3_location)
 
 if __name__ == "__main__":
     while True:
@@ -102,7 +103,17 @@ if __name__ == "__main__":
         if option == "1":
             run_actuators()
         elif option == "2":
-            run_sensors()
+            try:
+                run_p1()
+                run_p2()
+                run_p3()
+                while True:
+                    time.sleep(1)
+
+            except KeyboardInterrupt:
+                print('Stopping app')
+                for t in threads:
+                    stop_event.set()
         elif option == "3":
             print("You have exited the program.")
             GPIO.cleanup()
