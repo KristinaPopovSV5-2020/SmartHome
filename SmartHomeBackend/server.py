@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import paho.mqtt.publish as publish
 import json
 
 from flask import Flask, jsonify, request
@@ -13,6 +14,10 @@ org = "ftn"
 url = "http://localhost:8086"
 bucket = "iot"
 influxdb_client = InfluxDBClient(url=url, token=token, org=org)
+
+# MQTT Configuration
+mqtt_broker_host = "localhost"
+mqtt_broker_port = 1883
 
 
 def on_connect(client, userdata, flags, rc):
@@ -61,6 +66,26 @@ def handle_influx_query(query):
                 container.append(record.values)
 
         return jsonify({"status": "success", "data": container})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+def send_mqtt_request(payload, mqtt_topic):
+    try:
+        publish.single(mqtt_topic, payload=json.dumps(payload), hostname=mqtt_broker_host, port=mqtt_broker_port)
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+# ENDPOINTS RELATED TO DEVICES
+@app.route('/dl_change_state', methods=['POST'])
+def send_mqtt_request_endpoint():
+    try:
+        data = request.get_json()
+        print(data)
+        send_mqtt_request(data, "server/coveredPorch/dl")
+        return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 

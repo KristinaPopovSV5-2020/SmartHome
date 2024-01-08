@@ -32,7 +32,6 @@ publisher_thread.start()
 
 def dl_callback(turnOn, publish_event, dl_settings, verbose=True):
     global publish_data_counter, publish_data_limit
-    textTurnOn = ""
     if turnOn:
         textTurnOn = "Light on"
     else:
@@ -60,10 +59,15 @@ def dl_callback(turnOn, publish_event, dl_settings, verbose=True):
         publish_event.set()
 
 
+def handle_dl_message(payload, dl_settings):
+    turn_on = payload.get("value", False)
+    run_dl(dl_settings, turn_on)
+
+
 def run_dl(settings, turnOn):
     if settings['simulated']:
         dl_callback(turnOn, publish_event, settings)
     else:
         from devices.actuators.door_light import light
-        light(turnOn,settings)
+        light(turnOn, settings)
         dl_callback(turnOn, publish_event, settings)
