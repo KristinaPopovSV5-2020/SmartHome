@@ -39,6 +39,7 @@
       "simulated": true,
       "runs_on": "PI1",
       "topic": "home/coveredPorch/d-pir1",
+      "topic_single": "home/coveredPorch/d-pir1/single",
       "pin": 17
     },
     "RPIR1": {
@@ -46,6 +47,7 @@
       "simulated": true,
       "runs_on": "PI1",
       "topic": "home/foyer/r-pir1",
+      "topic_single": "home/foyer/r-pir1/single",
       "pin": 3
     },
     "RPIR2": {
@@ -53,6 +55,7 @@
       "simulated": true,
       "runs_on": "PI1",
       "topic": "home/openRailing/r-pir2",
+      "topic_single": "home/openRailing/r-pir2/single",
       "pin": 4
     },
     "RDHT1": {

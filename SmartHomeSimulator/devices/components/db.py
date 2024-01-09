@@ -60,6 +60,11 @@ def db_callback(turnOn, publish_event, db_settings, verbose=True):
         publish_event.set()
 
 
+def handle_db_message(payload, dl_settings):
+    turn_on = payload.get("value", False)
+    run_db(dl_settings, turn_on)
+
+
 def run_db(settings, turnOn):
     if settings['simulated']:
         db_callback(turnOn, publish_event, settings)
