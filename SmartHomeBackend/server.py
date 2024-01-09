@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 import json
+import threading
 
 from flask import Flask, jsonify, request
 from influxdb_client import InfluxDBClient, Point
@@ -33,14 +34,65 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/bedroom3/rdht2/humidity")
     client.subscribe("home/bedroom3/rdht2/temperature")
     client.subscribe("home/openRailing/r-pir2")
+    client.subscribe("home/coveredPorch/d-pir1/single")
+
+
+def on_message(client, userdata, msg):
+    payload = json.loads(msg.payload.decode())
+    topic = msg.topic
+
+    topic_method_mapping = {
+        "home/coveredPorch/dl": database_save,
+        "home/coveredPorch/d-pir1": dpir1_save_to_db,
+        "home/coveredPorch/d-pir1/single": dpir1_detect_movement,
+        "home/foyer/r-pir1": database_save,
+        "home/openRailing/r-pir2": database_save,
+        "home/bedroom2/rdht1/temperature": database_save,
+        "home/bedroom2/rdht1/humidity": database_save,
+        "home/bedroom2/rdht2/temperature": database_save,
+        "home/bedroom2/rdht2/humidity": database_save,
+        "home/foyer/dms": database_save,
+        "home/coveredPorch/d-us1": database_save,
+        "home/foyer/ds1": database_save,
+        "home/foyer/db": database_save,
+    }
+
+    if topic in topic_method_mapping:
+        topic_method_mapping[topic](payload, msg.payload)
 
 
 # MQTT Configuration
 mqtt_client = mqtt.Client()
 mqtt_client.on_connect = on_connect
-mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
+# mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
+mqtt_client.on_message = on_message
 mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
+
+
+def database_save(payload, msg):
+    print(payload)
+    save_to_db(json.loads(msg.decode('utf-8')))
+
+
+def dpir1_save_to_db(payload, msg):
+    save_to_db(json.loads(msg.decode('utf-8')))
+
+
+def send_mqtt_request(payload, mqtt_topic):
+    try:
+        with app.app_context():
+            publish.single(mqtt_topic, payload=json.dumps(payload), hostname=mqtt_broker_host, port=mqtt_broker_port)
+            return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+def dpir1_detect_movement(payload, msg):
+    print(payload)
+    if payload["value"]:
+        send_mqtt_request({"value": True}, "server/pi1/coveredPorch/dl")
+        threading.Timer(10, send_mqtt_request, args=({"value": False}, "server/pi1/coveredPorch/dl")).start()
 
 
 def save_to_db(data):
@@ -70,21 +122,24 @@ def handle_influx_query(query):
         return jsonify({"status": "error", "message": str(e)})
 
 
-def send_mqtt_request(payload, mqtt_topic):
+# ENDPOINTS RELATED TO DEVICES
+@app.route('/dl_change_state', methods=['POST'])
+def dl_change_state():
     try:
-        publish.single(mqtt_topic, payload=json.dumps(payload), hostname=mqtt_broker_host, port=mqtt_broker_port)
+        data = request.get_json()
+        print(data)
+        send_mqtt_request(data, "server/pi1/coveredPorch/dl")
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
 
-# ENDPOINTS RELATED TO DEVICES
-@app.route('/dl_change_state', methods=['POST'])
-def send_mqtt_request_endpoint():
+@app.route('/db_change_state', methods=['POST'])
+def db_change_state():
     try:
         data = request.get_json()
         print(data)
-        send_mqtt_request(data, "server/coveredPorch/dl")
+        send_mqtt_request(data, "server/pi1/foyer/db")
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})

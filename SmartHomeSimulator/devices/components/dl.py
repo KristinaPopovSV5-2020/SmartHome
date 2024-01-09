@@ -40,16 +40,16 @@ def dl_callback(turnOn, publish_event, dl_settings, verbose=True):
         t = time.localtime()
         print(f"\n{textTurnOn} at {time.strftime('%H:%M:%S', t)}")
 
-    valueTurnOn = 1
+    valueTurnOn = 0
     if turnOn:
-        valueTurnOn = 0
+        valueTurnOn = 1
 
     payload = {
         "measurement": "DL",
         "simulated": dl_settings['simulated'],
         "runs_on": dl_settings["runs_on"],
         "name": dl_settings["name"],
-        "value": valueTurnOn,
+        "value": turnOn,
     }
     with counter_lock:
         dl_batch.append((dl_settings['topic'], json.dumps(payload), 0, True))
@@ -60,6 +60,7 @@ def dl_callback(turnOn, publish_event, dl_settings, verbose=True):
 
 
 def handle_dl_message(payload, dl_settings):
+    print("Svetlo se uplaio")
     turn_on = payload.get("value", False)
     run_dl(dl_settings, turn_on)
 

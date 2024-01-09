@@ -4,7 +4,7 @@ import random
 
 def generate_motion():
     while True:
-        yield random.choice([True, False])
+        yield True
 
 
 def run_pir_simulator(delay, callback, stop_event, publish_event, settings):

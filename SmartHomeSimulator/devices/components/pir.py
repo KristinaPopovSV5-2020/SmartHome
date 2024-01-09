@@ -7,16 +7,11 @@ import time
 from devices.simulators.pir import run_pir_simulator
 
 
-def pir_callback(motion_detected, name):
-    t = time.localtime()
-    if motion_detected:
-        print("\nMotion detected from " + name + f" at {time.strftime('%H:%M:%S', t)}")
-
-
 pir_batch = []
 publish_data_counter = 0
 publish_data_limit = 5
 counter_lock = threading.Lock()
+
 
 def publisher_task(event, pir_batch):
     global publish_data_counter, publish_data_limit
@@ -37,34 +32,7 @@ publisher_thread.daemon = True
 publisher_thread.start()
 
 
-def pir_callback(motion, code, publish_event, pir_settings, verbose=True):
-    global publish_data_counter, publish_data_limit
-
-    if verbose:
-        t = time.localtime()
-        print("=" * 20)
-        print(pir_settings["name"] + ":")
-        print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-        print(f"Code: {code}")
-        print(f"Motion: {motion}%")
-
-    motion_payload = {
-        "measurement": "Motion",
-        "simulated": pir_settings['simulated'],
-        "runs_on": pir_settings["runs_on"],
-        "name": pir_settings["name"],
-        "value": motion
-    }
-
-    with counter_lock:
-        pir_settings.append((pir_settings['topic'], json.dumps(motion_payload), 0, True))
-        publish_data_counter += 1
-
-    if publish_data_counter >= publish_data_limit:
-        publish_event.set()
-
-
-def pir_callback_sim(motion, publish_event, pir_settings, verbose=True):
+def pir_callback(motion, publish_event, pir_settings, verbose=True):
     global publish_data_counter, publish_data_limit
 
     if verbose:
@@ -73,7 +41,7 @@ def pir_callback_sim(motion, publish_event, pir_settings, verbose=True):
             f"\nMotion detected from {pir_settings['name']} at {time.strftime('%H:%M:%S', t)}")
 
     motion_payload = {
-        "measurement": "Motion",
+        "measurement": "PIR",
         "simulated": pir_settings['simulated'],
         "runs_on": pir_settings["runs_on"],
         "name": pir_settings["name"],
@@ -87,11 +55,16 @@ def pir_callback_sim(motion, publish_event, pir_settings, verbose=True):
     if publish_data_counter >= publish_data_limit:
         publish_event.set()
 
+    publish.single(topic=pir_settings['topic_single'], payload=json.dumps(motion_payload), hostname=HOSTNAME, port=PORT)
+
+
+
 
 def run_pir(settings, threads, stop_event):
     if settings['simulated']:
         print("Starting " + settings["name"] + " simulator")
-        pir1_thread = threading.Thread(target=run_pir_simulator, args=(2, pir_callback_sim, stop_event, publish_event, settings))
+        pir1_thread = threading.Thread(target=run_pir_simulator,
+                                       args=(15, pir_callback, stop_event, publish_event, settings))
         pir1_thread.start()
         threads.append(pir1_thread)
         print(settings["name"] + " simulator started")

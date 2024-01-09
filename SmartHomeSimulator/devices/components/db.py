@@ -41,9 +41,9 @@ def db_callback(turnOn, publish_event, db_settings, verbose=True):
         t = time.localtime()
         print(f"\n{textTurnOn} at {time.strftime('%H:%M:%S', t)}")
 
-    valueTurnOn = 1
+    valueTurnOn = 0
     if turnOn:
-        valueTurnOn = 0
+        valueTurnOn = 1
 
     payload = {
         "measurement": "DB",
@@ -58,6 +58,11 @@ def db_callback(turnOn, publish_event, db_settings, verbose=True):
 
     if publish_data_counter >= publish_data_limit:
         publish_event.set()
+
+
+def handle_db_message(payload, dl_settings):
+    turn_on = payload.get("value", False)
+    run_db(dl_settings, turn_on)
 
 
 def run_db(settings, turnOn):

@@ -1,9 +1,8 @@
 import json
 
-from pynput import keyboard
 import threading
-from devices.components.dl import run_dl, handle_dl_message
-from devices.components.db import run_db
+from devices.components.dl import handle_dl_message
+from devices.components.db import handle_db_message
 from devices.components.pir import run_pir
 from devices.components.ds import run_ds
 from devices.components.dus import run_dus
@@ -35,54 +34,29 @@ def on_message(client, userdata, msg):
     pi3_settings = load_settings("settings/settings_PI3.json")
 
     topic_method_mapping = {
-        "server/coveredPorch/dl": handle_dl_message,
+        "server/pi1/coveredPorch/dl": handle_dl_message,
+        "server/pi1/foyer/db": handle_db_message,
     }
 
+    pi_device = topic.split("/")[1]
+    device = topic.split("/")[3].upper()
+
     if topic in topic_method_mapping:
-        topic_method_mapping[topic](payload, pi1_settings["DL"])
+        if pi_device == "pi1":
+            topic_method_mapping[topic](payload, pi1_settings[device])
+        elif pi_device == "pi2":
+            topic_method_mapping[topic](payload, pi2_settings[device])
+        elif pi_device == "pi3":
+            topic_method_mapping[topic](payload, pi3_settings[device])
 
 
 def mqtt_subscribe():
     client = mqtt.Client()
     client.on_message = on_message
     client.connect("localhost", 1883, 60)
-    client.subscribe("server/coveredPorch/dl")
+    client.subscribe("server/pi1/coveredPorch/dl")
+    client.subscribe("server/pi1/foyer/db")
     client.loop_start()
-
-
-class KeyState:
-    def __init__(self):
-        pi1_settings = load_settings("settings/settings_PI1.json")
-        self.dl_settings = pi1_settings["DL"]
-        self.db_settings = pi1_settings["DB"]
-
-    def on_press(self, key):
-        try:
-            if key.char == self.dl_settings["activation"]:
-                run_dl(self.dl_settings, True)
-            elif key.char == self.dl_settings["activation_off"]:
-                run_dl(self.dl_settings, False)
-            elif key.char == self.db_settings["activation"]:
-                run_db(self.db_settings, True)
-            elif key.char == self.db_settings["activation_off"]:
-                run_db(self.db_settings, False)
-
-        except AttributeError:
-            pass
-
-
-def run_actuators():
-    pi1_settings = load_settings("settings/settings_PI1.json")
-    dl_settings = pi1_settings["DL"]
-    db_settings = pi1_settings["DB"]
-    print("If you want to turn on door light we need to press the keyboard button " + dl_settings["activation"] + " \n"
-                                                                                                                  "If you want to turn off door light we need to press the keyboard button " +
-          dl_settings["activation_off"])
-    print("if you want to turn on door buzzer, we need to press the keyboard button " + db_settings["activation"])
-    print("if you want to turn off door buzzer, we need to press the keyboard button " + db_settings["activation_off"])
-    key_state = KeyState()
-    with keyboard.Listener(on_press=key_state.on_press, suppress=True) as listener:
-        listener.join()
 
 
 def run_p1():
@@ -122,31 +96,16 @@ def run_p3():
 
 if __name__ == "__main__":
     mqtt_subscribe()
-    while True:
-        print("Choose an option:")
-        print("1. Actuators")
-        print("2. Sensors")
-        print("3. Exit\n\n")
 
-        option = input("Enter the option number: ")
+    try:
+        run_p1()
+        run_p2()
+        run_p3()
+        while True:
+            time.sleep(1)
 
-        if option == "1":
-            run_actuators()
-        elif option == "2":
-            try:
-                run_p1()
-                run_p2()
-                run_p3()
-                while True:
-                    time.sleep(1)
-
-            except KeyboardInterrupt:
-                print('Stopping app')
-                for t in threads:
-                    stop_event.set()
-        elif option == "3":
-            print("You have exited the program.")
-            GPIO.cleanup()
-            break
-        else:
-            print("Invalid input.")
+    except KeyboardInterrupt:
+        print('Stopping app')
+        GPIO.cleanup()
+        for t in threads:
+            stop_event.set()
