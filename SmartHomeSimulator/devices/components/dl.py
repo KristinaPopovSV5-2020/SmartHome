@@ -49,7 +49,7 @@ def dl_callback(turnOn, publish_event, dl_settings, verbose=True):
         "simulated": dl_settings['simulated'],
         "runs_on": dl_settings["runs_on"],
         "name": dl_settings["name"],
-        "value": valueTurnOn,
+        "value": turnOn,
     }
     with counter_lock:
         dl_batch.append((dl_settings['topic'], json.dumps(payload), 0, True))

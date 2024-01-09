@@ -42,9 +42,19 @@ def on_message(client, userdata, msg):
     topic = msg.topic
 
     topic_method_mapping = {
+        "home/coveredPorch/dl": database_save,
         "home/coveredPorch/d-pir1": dpir1_save_to_db,
         "home/coveredPorch/d-pir1/single": dpir1_detect_movement,
-        "home/coveredPorch/dl": dl_save,
+        "home/foyer/r-pir1": database_save,
+        "home/openRailing/r-pir2": database_save,
+        "home/bedroom2/rdht1/temperature": database_save,
+        "home/bedroom2/rdht1/humidity": database_save,
+        "home/bedroom2/rdht2/temperature": database_save,
+        "home/bedroom2/rdht2/humidity": database_save,
+        "home/foyer/dms": database_save,
+        "home/coveredPorch/d-us1": database_save,
+        "home/foyer/ds1": database_save,
+        "home/foyer/db": database_save,
     }
 
     if topic in topic_method_mapping:
@@ -60,7 +70,7 @@ mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
 
 
-def dl_save(payload, msg):
+def database_save(payload, msg):
     print(payload)
     save_to_db(json.loads(msg.decode('utf-8')))
 

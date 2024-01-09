@@ -41,7 +41,7 @@ def pir_callback(motion, publish_event, pir_settings, verbose=True):
             f"\nMotion detected from {pir_settings['name']} at {time.strftime('%H:%M:%S', t)}")
 
     motion_payload = {
-        "measurement": "Motion",
+        "measurement": "PIR",
         "simulated": pir_settings['simulated'],
         "runs_on": pir_settings["runs_on"],
         "name": pir_settings["name"],
