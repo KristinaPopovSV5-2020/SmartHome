@@ -33,9 +33,8 @@ publisher_thread.daemon = True
 publisher_thread.start()
 
 
-def b4sd_callback(publish_event, b4sd_settings, verbose=True):
+def b4sd_callback(current_time,publish_event, b4sd_settings, verbose=True):
     global publish_data_counter, publish_data_limit
-    current_time = datetime.now().strftime("%H%M")
     if verbose:
         t = time.localtime()
         print(f"B4SD display {current_time} at {time.strftime('%H:%M:%S', t)}")
@@ -58,9 +57,9 @@ def b4sd_callback(publish_event, b4sd_settings, verbose=True):
 def run_b4sd(settings):
     if settings['simulated']:
         from devices.actuators.b4sd import display_simulator
-        display_simulator(settings)
-        #b4sd_callback(publish_event, settings)
+        current_time = display_simulator(settings)
+        b4sd_callback(current_time,publish_event, settings)
     else:
         from devices.actuators.b4sd import display
-        display(settings)
-        #b4sd_callback(publish_event, settings)
+        current_time = display(settings)
+        b4sd_callback(current_time,publish_event, settings)

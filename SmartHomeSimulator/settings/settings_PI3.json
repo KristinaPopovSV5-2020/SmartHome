@@ -4,6 +4,7 @@
     "simulated": true,
     "runs_on": "PI3",
     "topic": "home/dinette/rpir4",
+    "topic_single": "home/dinette/rpir4/single",
     "pin": 4
   },
   "RDHT4": {
@@ -36,7 +37,8 @@
       "name": "BIR",
       "simulated": true,
       "runs_on": "PI3",
-      "topic": "home/owners-suite/bir"
+      "topic": "home/owners-suite/bir",
+      "pin": 17
     },
   "BRGB": {
       "name": "BRGB",

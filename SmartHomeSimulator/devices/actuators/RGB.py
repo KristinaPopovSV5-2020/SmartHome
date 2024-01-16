@@ -8,12 +8,6 @@ from time import sleep
 # disable warnings (optional)
 GPIO.setwarnings(False)
 
-GPIO.setmode(GPIO.BCM)
-
-
-
-# set pins as outputs
-
 
 
 def turnOff(device):

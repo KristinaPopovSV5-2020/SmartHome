@@ -11,8 +11,8 @@ def buzz(settings, turnOn):
     if turnOn:
         pin = settings['pin']
         GPIO.setup(pin, GPIO.OUT)
-        pitch = 440
-        duration = 0.1
+        pitch = settings['pitch']
+        duration = settings['duration']
         period = 1.0 / pitch
         delay = period / 2
         cycles = int(duration * pitch)

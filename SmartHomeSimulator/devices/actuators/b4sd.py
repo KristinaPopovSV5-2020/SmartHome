@@ -23,6 +23,8 @@ num = {' ': (0, 0, 0, 0, 0, 0, 0),
 def display_simulator(device):
     current_time = datetime.now().strftime("%H%M")
     print(device['name']," display is", current_time)
+    return current_time
+
 def display(device):
     try:
         while True:
@@ -39,3 +41,4 @@ def display(device):
                 GPIO.output(device["digits"][digit], 1)
     finally:
         GPIO.cleanup()
+        return current_time

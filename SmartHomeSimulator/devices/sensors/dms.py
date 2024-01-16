@@ -53,7 +53,7 @@ def extract_non_none_value(values):
     return None
 
 
-def run_dms_loop(dms,delay, callback, stop_event, name):
+def run_dms_loop(dms,delay, callback, stop_event, publish_event, settings):
     dms.setup_gpio()
     while True:
         values = (
@@ -64,7 +64,7 @@ def run_dms_loop(dms,delay, callback, stop_event, name):
         )
         code = extract_non_none_value(values)
         if code is not None:
-            callback(code, name)
+            callback(code, publish_event, settings)
         if stop_event.is_set():
             break
         time.sleep(delay)

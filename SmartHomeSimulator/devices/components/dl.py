@@ -2,7 +2,6 @@ import json
 import threading
 import time
 from broker_settings import HOSTNAME, PORT
-
 from paho.mqtt import publish
 
 dl_batch = []
@@ -49,7 +48,7 @@ def dl_callback(turnOn, publish_event, dl_settings, verbose=True):
         "simulated": dl_settings['simulated'],
         "runs_on": dl_settings["runs_on"],
         "name": dl_settings["name"],
-        "value": turnOn,
+        "value": valueTurnOn,
     }
     with counter_lock:
         dl_batch.append((dl_settings['topic'], json.dumps(payload), 0, True))

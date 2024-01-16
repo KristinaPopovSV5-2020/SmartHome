@@ -6,6 +6,7 @@ from devices.components.db import handle_db_message
 from devices.components.pir import run_pir
 from devices.components.ds import run_ds
 from devices.components.dus import run_dus
+from devices.components.bir import run_bir
 from settings import load_settings
 from devices.components.dht import run_dht
 from devices.components.dms import run_dms
@@ -53,6 +54,7 @@ def on_message(client, userdata, msg):
 def mqtt_subscribe():
     client = mqtt.Client()
     client.on_message = on_message
+    #client.connect("10.1.121.34", 1883, 60)
     client.connect("localhost", 1883, 60)
     client.subscribe("server/pi1/coveredPorch/dl")
     client.subscribe("server/pi1/foyer/db")
@@ -90,9 +92,19 @@ def run_p2():
     pi2_settings = load_settings(pi2_location)
 
 
+
+
 def run_p3():
     pi3_settings = load_settings(pi3_location)
 
+    rpir4_settings = pi3_settings['RPIR4']
+    run_pir(rpir4_settings, threads, stop_event)
+
+    rdht4_settings = pi3_settings['RDHT4']
+    run_dht(rdht4_settings, threads, stop_event)
+
+    bir_settings = pi3_settings['BIR']
+    run_bir(bir_settings, threads, stop_event)
 
 if __name__ == "__main__":
     mqtt_subscribe()

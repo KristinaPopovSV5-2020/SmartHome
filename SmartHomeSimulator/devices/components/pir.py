@@ -69,11 +69,10 @@ def run_pir(settings, threads, stop_event):
         threads.append(pir1_thread)
         print(settings["name"] + " simulator started")
     else:
-        from devices.sensors.pir import run_pir_loop, PIR
+        from devices.sensors.pir import run_pir_loop
         print("Starting " + settings["name"] + " loop")
-        pir = PIR(settings['pin'], settings["name"])
         pir1_thread = threading.Thread(target=run_pir_loop,
-                                       args=(pir, 2, pir_callback(), stop_event, publish_event, settings))
+                                       args=(settings, pir_callback, stop_event,publish_event))
         pir1_thread.start()
         threads.append(pir1_thread)
         print(settings["name"] + " loop started")

@@ -37,13 +37,15 @@ def get_distance(TRIG_PIN, ECHO_PIN):
     return distance
 
 
-def run_dus_loop(TRIG_PIN, ECHO_PIN, callback, stop_event, name):
+def run_dus_loop(callback, stop_event,publish_event, settings):
+    TRIG_PIN = settings['pin_trig']
+    ECHO_PIN = settings['pin_echo']
     GPIO.setup(TRIG_PIN, GPIO.OUT)
     GPIO.setup(ECHO_PIN, GPIO.IN)
     while True:
         distance = get_distance(TRIG_PIN, ECHO_PIN)
         if distance is not None:
-            callback(name, distance)
+            callback(distance, publish_event,settings)
             print(f'Distance: {distance} cm')
         else:
             print('Measurement timed out')
