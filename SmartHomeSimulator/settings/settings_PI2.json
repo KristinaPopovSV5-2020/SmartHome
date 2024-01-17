@@ -2,12 +2,19 @@
   "DS2": {
     "name": "DS2",
     "simulated": true,
-    "runs_on": "PI1",
+    "runs_on": "PI2",
     "topic": "home/foyer/db",
     "pin": 22,
     "activation": "b",
     "activation_off": "m",
     "pitch": 440,
     "duration": 0.1
+  },
+  "LCD": {
+    "name": "GLCD",
+    "simulated": false,
+    "runs_on": "PI2",
+    "pin_sda": 2,
+    "pin_scl": 3
   }
 }

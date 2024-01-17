@@ -73,6 +73,7 @@ def convertHex(binaryValue):
     return hex(tmpB2)
 
 def run_bir_loop(callback,stop_event, publish_event, settings):
+    GPIO.setup(settings['pin'], GPIO.IN)
     while True:
         binary = getBinary(settings['pin'])
         if binary is not None:

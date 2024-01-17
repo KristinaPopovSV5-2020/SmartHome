@@ -3,6 +3,7 @@ import json
 import threading
 from devices.components.dl import handle_dl_message
 from devices.components.db import handle_db_message
+from devices.components.glcd import handle_lcd_message
 from devices.components.pir import run_pir
 from devices.components.ds import run_ds
 from devices.components.dus import run_dus
@@ -37,6 +38,7 @@ def on_message(client, userdata, msg):
     topic_method_mapping = {
         "server/pi1/coveredPorch/dl": handle_dl_message,
         "server/pi1/foyer/db": handle_db_message,
+        "server/pi2/garage/lcd": handle_lcd_message,
     }
 
     pi_device = topic.split("/")[1]
@@ -54,10 +56,11 @@ def on_message(client, userdata, msg):
 def mqtt_subscribe():
     client = mqtt.Client()
     client.on_message = on_message
-    #client.connect("10.1.121.34", 1883, 60)
-    client.connect("localhost", 1883, 60)
+    client.connect("10.1.121.34", 1883, 60)
+    #client.connect("localhost", 1883, 60)
     client.subscribe("server/pi1/coveredPorch/dl")
     client.subscribe("server/pi1/foyer/db")
+    client.subscribe("server/pi2/garage/lcd")
     client.loop_start()
 
 

@@ -145,6 +145,19 @@ def db_change_state():
         return jsonify({"status": "error", "message": str(e)})
 
 
+@app.route('/lcd_change_state', methods=['POST'])
+def lcd_change_state():
+    try:
+        data = request.get_json()
+        print(data)
+        send_mqtt_request(data, "server/pi2/garage/lcd")
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+
+
 @app.route('/store_data', methods=['POST'])
 def store_data():
     try:

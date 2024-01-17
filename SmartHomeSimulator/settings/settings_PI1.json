@@ -1,7 +1,7 @@
 {
     "DB": {
       "name": "DB",
-      "simulated": true,
+      "simulated": false,
       "runs_on": "PI1",
       "topic": "home/foyer/db",
       "pin": 22,
@@ -21,7 +21,7 @@
     },
     "DUS1": {
       "name": "DUS1",
-      "simulated": true,
+      "simulated": false,
       "runs_on": "PI1",
       "topic": "home/coveredPorch/d-us1",
       "pin_trig": 5,
