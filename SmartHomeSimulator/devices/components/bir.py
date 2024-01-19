@@ -3,12 +3,8 @@ from devices.simulators.bir import run_bir_simulator
 from paho.mqtt import publish
 from broker_settings import HOSTNAME, PORT
 
-
 import threading
 import time
-
-
-
 
 bir_batch = []
 publish_data_counter = 0
@@ -27,6 +23,7 @@ def publisher_task(event, bir_batch):
         publish.multiple(local_bir_batch, hostname=HOSTNAME, port=PORT)
         print(f'Published {len(local_bir_batch)} BIR values')
         event.clear()
+
 
 publish_event = threading.Event()
 publisher_thread = threading.Thread(target=publisher_task, args=(publish_event, bir_batch))
@@ -56,15 +53,21 @@ def bir_callback(code, publish_event, bir_settings, verbose=True):
     if publish_data_counter >= publish_data_limit:
         publish_event.set()
 
+    publish.single(topic=bir_settings['turn_on_rgb_topic'], payload=json.dumps(payload), hostname=HOSTNAME, port=PORT)
+
+
+def handle_bir_message(payload, rgb_settings):
+    code = payload.get("code", " ")
+    if rgb_settings['simulated']:
+        run_bir_sim(rgb_settings, code)
+
+
+def run_bir_sim(rgb_settings, code):
+    bir_callback(code, publish_event, rgb_settings)
+
 
 def run_bir(settings, threads, stop_event):
-    if settings['simulated']:
-        print("Starting " + settings["name"] + " simulator")
-        bir_thread = threading.Thread(target=run_bir_simulator, args=(2, bir_callback, stop_event, publish_event, settings))
-        bir_thread.start()
-        threads.append(bir_thread)
-        print(settings["name"] + " sumilator started")
-    else:
+    if not settings['simulated']:
         from devices.sensors.bir import run_bir_loop
         print("Starting " + settings["name"] + " loop")
         bir_thread = threading.Thread(target=run_bir_loop, args=(bir_callback, stop_event, publish_event, settings))

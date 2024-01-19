@@ -20,8 +20,6 @@
       "runs_on": "PI3",
       "topic": "home/owners-suite/bb",
       "pin": 22,
-      "activation": "b",
-      "activation_off": "m",
       "pitch": 440,
       "duration": 0.1
     },
@@ -38,6 +36,7 @@
       "simulated": true,
       "runs_on": "PI3",
       "topic": "home/owners-suite/bir",
+      "turn_on_rgb_topic": "home/owners-suite/bir/rgb",
       "pin": 17
     },
   "BRGB": {

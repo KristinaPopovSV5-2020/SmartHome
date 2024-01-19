@@ -1,65 +1,32 @@
-
-import json
 import threading
-import time
-from datetime import datetime
 
-from broker_settings import HOSTNAME, PORT
+from devices.actuators.b4sd import turn_on_b4sd, turn_off_b4sd, set_intermittently
 
-from paho.mqtt import publish
-
-b4sd_batch = []
-publish_data_counter = 0
-publish_data_limit = 4
-counter_lock = threading.Lock()
+b4sd_thread = None
 
 
-def publisher_task(event, b4sd_batch):
-    global publish_data_counter, publish_data_limit
-    while True:
-        event.wait()
-        with counter_lock:
-            local_b4sd_batch = b4sd_batch.copy()
-            publish_data_counter = 0
-            b4sd_batch.clear()
-        publish.multiple(local_b4sd_batch, hostname=HOSTNAME, port=PORT)
-        print(f'Published {len(local_b4sd_batch)} DB values')
-        event.clear()
+def handle_b4sd_message(payload, b4sd_settings):
+    global b4sd_thread
+    try:
+        print("OVDE", payload)
+        intermittently = payload.get("intermittently", False)
+        turnOn = payload.get("turnOn", False)
+        set_intermittently(intermittently)
+        if turnOn:
+            turn_on_b4sd()
+            if b4sd_thread is None or not b4sd_thread.is_alive():
+                b4sd_thread = threading.Thread(target=run_b4sd, args=(b4sd_settings,))
+                b4sd_thread.start()
+        else:
+            turn_off_b4sd()
+    except Exception as e:
+        print(f"Greška u handle_b4sd_message: {e}")
 
-
-publish_event = threading.Event()
-publisher_thread = threading.Thread(target=publisher_task, args=(publish_event, b4sd_batch))
-publisher_thread.daemon = True
-publisher_thread.start()
-
-
-def b4sd_callback(current_time,publish_event, b4sd_settings, verbose=True):
-    global publish_data_counter, publish_data_limit
-    if verbose:
-        t = time.localtime()
-        print(f"B4SD display {current_time} at {time.strftime('%H:%M:%S', t)}")
-
-
-    payload = {
-        "measurement": "B4SD",
-        "simulated": b4sd_settings['simulated'],
-        "runs_on": b4sd_settings["runs_on"],
-        "name": b4sd_settings["name"],
-        "value": current_time,
-    }
-    with counter_lock:
-        b4sd_batch.append((b4sd_settings['topic'], json.dumps(payload), 0, True))
-        publish_data_counter += 1
-
-    if publish_data_counter >= publish_data_limit:
-        publish_event.set()
 
 def run_b4sd(settings):
     if settings['simulated']:
         from devices.actuators.b4sd import display_simulator
-        current_time = display_simulator(settings)
-        b4sd_callback(current_time,publish_event, settings)
+        display_simulator(settings)
     else:
         from devices.actuators.b4sd import display
-        current_time = display(settings)
-        b4sd_callback(current_time,publish_event, settings)
+        display(settings)

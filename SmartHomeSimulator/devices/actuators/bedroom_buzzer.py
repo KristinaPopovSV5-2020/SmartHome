@@ -2,10 +2,10 @@ import time
 
 try:
     import RPi.GPIO as GPIO
-
     GPIO.setmode(GPIO.BCM)
 except:
     pass
+
 
 turn_on = False
 
@@ -18,17 +18,16 @@ def turn_on_buzzer():
 def turn_off_buzzer():
     global turn_on
     turn_on = False
-
+    print("ISKLJ", turn_on)
 
 def sim_buzz(settings):
     global turn_on
     while True:
-        print("Sound on", turn_on)
+        print("Cuje se", turn_on)
         if not turn_on:
             break
         time.sleep(2)
-    print("Sound off")
-
+    print("Ne cuje se")
 
 def buzz(settings):
     global turn_on

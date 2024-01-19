@@ -1,13 +1,17 @@
 import json
 
 import threading
+
+from devices.components.RGB import handle_brgb_message
+from devices.components.b4sd import handle_b4sd_message
 from devices.components.dl import handle_dl_message
 from devices.components.db import handle_db_message
+from devices.components.bb import handle_bb_message
 from devices.components.glcd import handle_lcd_message
 from devices.components.pir import run_pir
 from devices.components.ds import run_ds
 from devices.components.dus import run_dus
-from devices.components.bir import run_bir
+from devices.components.bir import run_bir, handle_bir_message
 from settings import load_settings
 from devices.components.dht import run_dht
 from devices.components.dms import run_dms
@@ -39,6 +43,10 @@ def on_message(client, userdata, msg):
         "server/pi1/coveredPorch/dl": handle_dl_message,
         "server/pi1/foyer/db": handle_db_message,
         "server/pi2/garage/lcd": handle_lcd_message,
+        "server/pi3/owners-suite/brgb": handle_brgb_message,
+        "server/pi3/owners-suite/bir": handle_bir_message,
+        "server/pi3/owners-suite/b4sd": handle_b4sd_message,
+        "server/pi3/owners-suite/bb": handle_bb_message,
     }
 
     pi_device = topic.split("/")[1]
@@ -56,11 +64,15 @@ def on_message(client, userdata, msg):
 def mqtt_subscribe():
     client = mqtt.Client()
     client.on_message = on_message
-    client.connect("10.1.121.34", 1883, 60)
-    #client.connect("localhost", 1883, 60)
+    #client.connect("10.1.121.34", 1883, 60)
+    client.connect("localhost", 1883, 60)
     client.subscribe("server/pi1/coveredPorch/dl")
     client.subscribe("server/pi1/foyer/db")
     client.subscribe("server/pi2/garage/lcd")
+    client.subscribe("server/pi3/owners-suite/brgb")
+    client.subscribe("server/pi3/owners-suite/bir")
+    client.subscribe("server/pi3/owners-suite/b4sd")
+    client.subscribe("server/pi3/owners-suite/bb")
     client.loop_start()
 
 

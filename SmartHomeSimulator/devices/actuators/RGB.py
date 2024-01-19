@@ -1,14 +1,37 @@
 try:
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
 except:
     pass
 from time import sleep
 
 # disable warnings (optional)
-GPIO.setwarnings(False)
 
+color = "turnOff"
 
+def led_sim():
+    global color
+    try:
+        while True:
+            if color == 'turnOff':
+                print("turnOff")
+            elif color == 'white':
+                print("white")
+            elif color == 'red':
+                print("red")
+            elif color == 'green':
+                print("green")
+            elif color == 'blue':
+                print("blue")
+            elif color == 'yellow':
+                print("yellow")
+            elif color == 'purple':
+                print("purple")
+            elif color == 'light_blue':
+                print("light_blue")
+    except KeyboardInterrupt:
+        print("Error")
 
 def turnOff(device):
     GPIO.output(device["RED_PIN"], GPIO.LOW)
@@ -57,28 +80,32 @@ def lightBlue(device):
     GPIO.output(device["GREEN_PIN"], GPIO.HIGH)
     GPIO.output(device["BLUE_PIN"], GPIO.HIGH)
 
+def set_color(value):
+    global color
+    color = value
 
 def led(device):
+    global color
     try:
         GPIO.setup(device["RED_PIN"], GPIO.OUT)
         GPIO.setup(device["GREEN_PIN"], GPIO.OUT)
         GPIO.setup(device["BLUE_PIN"], GPIO.OUT)
         while True:
-            turnOff(device)
-            sleep(1)
-            white(device)
-            sleep(1)
-            red(device)
-            sleep(1)
-            green(device)
-            sleep(1)
-            blue(device)
-            sleep(1)
-            yellow(device)
-            sleep(1)
-            purple(device)
-            sleep(1)
-            lightBlue(device)
-            sleep(1)
+            if color == 'turnOff':
+                turnOff(device)
+            elif color == 'white':
+                white(device)
+            elif color == 'red':
+                red(device)
+            elif color == 'green':
+                green(device)
+            elif color == 'blue':
+                blue(device)
+            elif color == 'yellow':
+                yellow(device)
+            elif color == 'purple':
+                purple(device)
+            elif color == 'light_blue':
+                lightBlue(device)
     except KeyboardInterrupt:
         GPIO.cleanup()
