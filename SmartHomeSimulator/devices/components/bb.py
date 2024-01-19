@@ -4,7 +4,7 @@ import time
 from broker_settings import HOSTNAME, PORT
 
 from paho.mqtt import publish
-
+from devices.actuators.bedroom_buzzer import turn_on_buzzer, turn_off_buzzer
 db_batch = []
 publish_data_counter = 0
 publish_data_limit = 4
@@ -47,7 +47,7 @@ def db_callback(publish_event, db_settings, verbose=True):
         valueTurnOn = 1
 
     payload = {
-        "measurement": "DB",
+        "measurement": "BB",
         "simulated": db_settings['simulated'],
         "runs_on": db_settings["runs_on"],
         "name": db_settings["name"],
@@ -61,19 +61,31 @@ def db_callback(publish_event, db_settings, verbose=True):
         publish_event.set()
 
 
-def handle_db_message(payload, dl_settings):
-    turn_on = payload.get("value", False)
-    run_db(dl_settings, turn_on)
+def handle_bb_message(payload, bb_settings):
+    turnOn = payload.get("value", False)
+    print("Primljena poruka",turnOn)
+    if turnOn:
+        turn_on_buzzer()
+        run_bb(bb_settings)
+    else:
+        turn_off_buzzer()
+
+def handle_bb_cancel_message(payload, bb_settings):
+    turnOn = payload.get("value", False)
+    print("Primljena poruka",turnOn)
+    if not turnOn:
+        turn_off_buzzer()
 
 
-def run_db(settings):
+
+def run_bb(settings):
     if settings['simulated']:
-        from devices.actuators.door_buzzer import buzz, sim_buzz
+        from devices.actuators.bedroom_buzzer import buzz, sim_buzz
         sim_buzz(settings)
         db_callback(publish_event, settings)
 
     else:
-        from devices.actuators.door_buzzer import buzz
+        from devices.actuators.bedroom_buzzer import buzz
         buzz(settings)
         db_callback(publish_event, settings)
 

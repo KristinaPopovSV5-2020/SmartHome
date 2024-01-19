@@ -1,12 +1,11 @@
 {
     "DB": {
       "name": "DB",
-      "simulated": false,
+      "simulated": true,
       "runs_on": "PI1",
       "topic": "home/foyer/db",
       "pin": 22,
-      "activation": "b",
-      "activation_off": "m",
+      "turn_on": false,
       "pitch": 440,
       "duration": 0.1
     },
@@ -15,13 +14,11 @@
       "simulated": true,
       "runs_on": "PI1",
       "topic": "home/coveredPorch/dl",
-      "pin": 18,
-      "activation": "o",
-      "activation_off": "x"
+      "pin": 18
     },
     "DUS1": {
       "name": "DUS1",
-      "simulated": false,
+      "simulated": true,
       "runs_on": "PI1",
       "topic": "home/coveredPorch/d-us1",
       "pin_trig": 5,

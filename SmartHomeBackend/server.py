@@ -1,13 +1,18 @@
+from datetime import datetime, timedelta
+
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 import json
 import threading
+from flask_apscheduler import APScheduler
+import time
 
 from flask import Flask, jsonify, request
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 app = Flask(__name__)
+scheduler = APScheduler()
 
 # InfluxDB Configuration
 token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
@@ -35,6 +40,9 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/bedroom3/rdht2/temperature")
     client.subscribe("home/openRailing/r-pir2")
     client.subscribe("home/coveredPorch/d-pir1/single")
+    client.subscribe("home/owners-suite/bir/rgb")
+    client.subscribe("home/owners-suite/bir")
+    client.subscribe("home/owners-suite/brgb")
 
 
 def on_message(client, userdata, msg):
@@ -55,6 +63,9 @@ def on_message(client, userdata, msg):
         "home/coveredPorch/d-us1": database_save,
         "home/foyer/ds1": database_save,
         "home/foyer/db": database_save,
+        "home/owners-suite/bir": database_save,
+        "home/owners-suite/bir/rgb": turn_on_rgb,
+        "home/owners-suite/brgb": database_save,
     }
 
     if topic in topic_method_mapping:
@@ -95,6 +106,53 @@ def dpir1_detect_movement(payload, msg):
         threading.Timer(10, send_mqtt_request, args=({"value": False}, "server/pi1/coveredPorch/dl")).start()
 
 
+def turn_on_rgb(payload, msg):
+    print(payload)
+    code = payload['value']
+    value = {"color": ' '}
+    if code == "1":
+        # turn on
+        value = {"color": 'white'}
+    elif code == "2":
+        # turn off
+        value = {"color": 'turnOff'}
+    elif code == "3":
+        # red
+        value = {"color": 'red'}
+    elif code == "4":
+        # green
+        value = {"color": 'green'}
+    elif code == "5":
+        # blue
+        value = {"color": 'blue'}
+    elif code == "6":
+        # yellow
+        value = {"color": 'yellow'}
+    elif code == "7":
+        # purple
+        value = {"color": 'purple'}
+    elif code == "8":
+        # light blue
+        value = {"color": 'light_blue'}
+
+    send_mqtt_request(value, "server/pi3/owners-suite/brgb")
+
+
+# ALARM
+def activate_alarm():
+    print("Alarm aktiviran")
+    send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
+    time.sleep(2)
+    # saljem value da je true, da bi se palio i gasio na svakih 0.5
+    data = {'intermittently': True,
+            'turnOn': True}
+    send_mqtt_request(data, "server/pi3/owners-suite/b4sd")
+
+def set_alarm(alarm_time):
+    alarm_time = datetime.now().replace(hour=alarm_time[0], minute=alarm_time[1], second=0, microsecond=0)
+    scheduler.add_job(id='activate_alarm', func=activate_alarm, trigger='date', run_date=alarm_time)
+
+
 def save_to_db(data):
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
     point = (
@@ -123,6 +181,37 @@ def handle_influx_query(query):
 
 
 # ENDPOINTS RELATED TO DEVICES
+
+@app.route('/set_alarm', methods=['POST'])
+def set_alarms():
+    try:
+        data = request.get_json()
+        value_data = data['value']
+        time_data = value_data.split(',')
+        alarm_time = (int(time_data[0]), int(time_data[1]))
+        set_alarm(alarm_time)
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+@app.route('/cancel_alarm', methods=['POST'])
+def cancel_alarm():
+    try:
+        data = request.get_json()
+        print(data)
+        #salje se vrednost false, da se ne bi vise cuo bb
+        send_mqtt_request(data, "server/pi3/owners-suite/bb/cancel")
+        print("POSLAto")
+        time.sleep(2)
+        #da se prekine prikaz na b4sd-u
+        data_b4sd = {'intermittently': False,
+                'turnOn': False}
+        send_mqtt_request(data_b4sd, "server/pi3/owners-suite/b4sd")
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
 @app.route('/dl_change_state', methods=['POST'])
 def dl_change_state():
     try:
@@ -156,6 +245,26 @@ def lcd_change_state():
         return jsonify({"status": "error", "message": str(e)})
 
 
+@app.route('/bir_change_state', methods=['POST'])
+def bir_change_state():
+    try:
+        data = request.get_json()
+        print(data)
+        send_mqtt_request(data, "server/pi3/owners-suite/bir")
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+@app.route('/b4sd_change_state', methods=['POST'])
+def b4sd_change_state():
+    try:
+        #saljem value da je false, da ne bi se palilo i gasilo na svakih 0.5s
+        data = request.get_json()
+        send_mqtt_request(data, "server/pi3/owners-suite/b4sd")
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 
 
 @app.route('/store_data', methods=['POST'])
@@ -186,4 +295,6 @@ def retrieve_aggregate_data():
 
 
 if __name__ == '__main__':
+    scheduler.init_app(app)
+    scheduler.start()
     app.run(debug=True, use_reloader=False)

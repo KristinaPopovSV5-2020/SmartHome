@@ -58,27 +58,27 @@ def lightBlue(device):
     GPIO.output(device["BLUE_PIN"], GPIO.HIGH)
 
 
-def led(device):
+def led(device, color):
     try:
         GPIO.setup(device["RED_PIN"], GPIO.OUT)
         GPIO.setup(device["GREEN_PIN"], GPIO.OUT)
         GPIO.setup(device["BLUE_PIN"], GPIO.OUT)
         while True:
-            turnOff(device)
-            sleep(1)
-            white(device)
-            sleep(1)
-            red(device)
-            sleep(1)
-            green(device)
-            sleep(1)
-            blue(device)
-            sleep(1)
-            yellow(device)
-            sleep(1)
-            purple(device)
-            sleep(1)
-            lightBlue(device)
-            sleep(1)
+            if color == 'turnOff':
+                turnOff(device)
+            elif color == 'white':
+                white(device)
+            elif color == 'red':
+                red(device)
+            elif color == 'green':
+                green(device)
+            elif color == 'blue':
+                blue(device)
+            elif color == 'yellow':
+                yellow(device)
+            elif color == 'purple':
+                purple(device)
+            elif color == 'light_blue':
+                lightBlue(device)
     except KeyboardInterrupt:
         GPIO.cleanup()
