@@ -4,10 +4,14 @@ import time
 from broker_settings import HOSTNAME, PORT
 from paho.mqtt import publish
 
+from devices.actuators.RGB import set_color
+
 rgb_batch = []
 publish_data_counter = 0
-publish_data_limit = 4
+publish_data_limit = 5
 counter_lock = threading.Lock()
+
+rgb_thread = None
 
 
 def publisher_task(event, rgb_batch):
@@ -50,16 +54,24 @@ def rgb_callback(color, publish_event, rgb_settings, verbose=True):
         publish_event.set()
 
 
-def handle_brgb_message(payload, rgb_settings):
-    color = payload.get("color", None)
-    if color != ' ':
-        run_brgb(rgb_settings, color)
+def handle_brgb_message(payload, settings):
+    global rgb_thread
+    try:
+        color = payload.get("color", None)
+        if color != ' ':
+            set_color(color)
+            if rgb_thread is None or not rgb_thread.is_alive():
+                rgb_thread = threading.Thread(target=run_brgb, args=(settings,))
+                rgb_thread.start()
+            rgb_callback(color, publish_event, settings)
+    except Exception as e:
+        print(f"Greška u handle_brgb_message: {e}")
 
 
-def run_brgb(settings, color):
+def run_brgb(settings):
     if settings['simulated']:
-        rgb_callback(color, publish_event, settings)
+        from devices.actuators.RGB import led_sim
+        #led_sim()
     else:
         from devices.actuators.RGB import led
-        led(settings, color)
-        rgb_callback(color, publish_event, settings)
+        led(settings)

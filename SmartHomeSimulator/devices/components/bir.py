@@ -74,9 +74,3 @@ def run_bir(settings, threads, stop_event):
         bir_thread.start()
         threads.append(bir_thread)
         print(settings["name"] + " loop started")
-    """if settings['simulated']:
-        print("Starting " + settings["name"] + " simulator")
-        bir_thread = threading.Thread(target=run_bir_simulator, args=(2, bir_callback, stop_event, publish_event, settings))
-        bir_thread.start()
-        threads.append(bir_thread)
-        print(settings["name"] + " sumilator started")"""

@@ -1,14 +1,37 @@
 try:
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
 except:
     pass
 from time import sleep
 
 # disable warnings (optional)
-GPIO.setwarnings(False)
 
+color = "turnOff"
 
+def led_sim():
+    global color
+    try:
+        while True:
+            if color == 'turnOff':
+                print("turnOff")
+            elif color == 'white':
+                print("white")
+            elif color == 'red':
+                print("red")
+            elif color == 'green':
+                print("green")
+            elif color == 'blue':
+                print("blue")
+            elif color == 'yellow':
+                print("yellow")
+            elif color == 'purple':
+                print("purple")
+            elif color == 'light_blue':
+                print("light_blue")
+    except KeyboardInterrupt:
+        print("Error")
 
 def turnOff(device):
     GPIO.output(device["RED_PIN"], GPIO.LOW)
@@ -57,8 +80,12 @@ def lightBlue(device):
     GPIO.output(device["GREEN_PIN"], GPIO.HIGH)
     GPIO.output(device["BLUE_PIN"], GPIO.HIGH)
 
+def set_color(value):
+    global color
+    color = value
 
-def led(device, color):
+def led(device):
+    global color
     try:
         GPIO.setup(device["RED_PIN"], GPIO.OUT)
         GPIO.setup(device["GREEN_PIN"], GPIO.OUT)
