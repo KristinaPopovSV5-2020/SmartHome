@@ -55,6 +55,7 @@ def extract_non_none_value(values):
 
 def run_dms_loop(dms,delay, callback, stop_event, publish_event, settings):
     dms.setup_gpio()
+    password = ""
     while True:
         values = (
             dms.read_line(dms.R1, ["1", "2", "3", "A"]),
@@ -64,7 +65,13 @@ def run_dms_loop(dms,delay, callback, stop_event, publish_event, settings):
         )
         code = extract_non_none_value(values)
         if code is not None:
-            callback(code, publish_event, settings)
+            password += code
+            if len(password) == 4:
+                is_password = False
+                if settings['password'] == password:
+                    is_password = True
+                callback(password,is_password, publish_event, settings)
+                password = ""
         if stop_event.is_set():
             break
         time.sleep(delay)

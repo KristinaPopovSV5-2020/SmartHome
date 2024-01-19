@@ -14,6 +14,10 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 app = Flask(__name__)
 scheduler = APScheduler()
 
+system_activated = False
+alarm = False
+sent_alarm = False
+
 # InfluxDB Configuration
 token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
 org = "ftn"
@@ -32,6 +36,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/coveredPorch/d-pir1")
     client.subscribe("home/foyer/db")
     client.subscribe("home/foyer/dms")
+    client.subscribe("home/foyer/dms/single")
     client.subscribe("home/foyer/ds1")
     client.subscribe("home/foyer/r-pir1")
     client.subscribe("home/bedroom2/rdht1/humidity")
@@ -44,6 +49,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/owners-suite/bir")
     client.subscribe("home/owners-suite/brgb")
     client.subscribe("home/owners-suite/bb")
+    client.subscribe("home/foyer/ds1-2")
 
 
 def on_message(client, userdata, msg):
@@ -61,6 +67,7 @@ def on_message(client, userdata, msg):
         "home/bedroom2/rdht2/temperature": database_save,
         "home/bedroom2/rdht2/humidity": database_save,
         "home/foyer/dms": database_save,
+        "home/foyer/dms/single": dms_detect_password,
         "home/coveredPorch/d-us1": database_save,
         "home/foyer/ds1": database_save,
         "home/foyer/db": database_save,
@@ -68,6 +75,7 @@ def on_message(client, userdata, msg):
         "home/owners-suite/bir/rgb": turn_on_rgb,
         "home/owners-suite/brgb": database_save,
         "home/owners-suite/bb": database_save,
+        "home/foyer/ds1-2": ds1_ds2_detect,
     }
 
     if topic in topic_method_mapping:
@@ -92,6 +100,20 @@ def dpir1_save_to_db(payload, msg):
     save_to_db(json.loads(msg.decode('utf-8')))
 
 
+def ds1_ds2_detect(payload, msg):
+    global system_activated, sent_alarm
+    value = payload['value']
+    sent = False
+    if value:
+        if system_activated and alarm and not sent_alarm:
+            sent_alarm = True
+            print("BUZZZZ")
+            send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
+            time.sleep(0.5)
+            send_mqtt_request({'value': True}, "server/pi1/foyer/db")
+
+
+
 def send_mqtt_request(payload, mqtt_topic):
     try:
         with app.app_context():
@@ -99,6 +121,26 @@ def send_mqtt_request(payload, mqtt_topic):
             return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
+
+
+def dms_detect_password(payload, msg):
+    global alarm, system_activated, sent_alarm
+    if payload['value'].split("-")[1] == "True":
+        alarm = False
+        system_activated = False
+        sent_alarm = False
+        print("Sound off")
+        print("System deactivated")
+        send_mqtt_request({'value': False}, "server/pi3/owners-suite/bb")
+        time.sleep(0.5)
+        send_mqtt_request({'value': False}, "server/pi1/foyer/db")
+
+    else:
+        time.sleep(10)
+        system_activated = True
+        alarm = True
+        print("System activated")
+        print("Alarm activated")
 
 
 def dpir1_detect_movement(payload, msg):
@@ -149,6 +191,7 @@ def activate_alarm():
             'turnOn': True}
     send_mqtt_request(data, "server/pi3/owners-suite/b4sd")
 
+
 def set_alarm(alarm_time):
     alarm_time = datetime.now().replace(hour=alarm_time[0], minute=alarm_time[1], second=0, microsecond=0)
     scheduler.add_job(id='activate_alarm', func=activate_alarm, trigger='date', run_date=alarm_time)
@@ -195,17 +238,19 @@ def set_alarms():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
+
+
 @app.route('/cancel_alarm', methods=['POST'])
 def cancel_alarm():
     try:
         data = request.get_json()
         print(data)
-        #salje se vrednost false, da se ne bi vise cuo bb
+        # salje se vrednost false, da se ne bi vise cuo bb
         send_mqtt_request(data, "server/pi3/owners-suite/bb")
         print("POSLAto")
         time.sleep(2)
         data_b4sd = {'intermittently': False,
-                'turnOn': False}
+                     'turnOn': False}
         send_mqtt_request(data_b4sd, "server/pi3/owners-suite/b4sd")
         return jsonify({"status": "success"})
     except Exception as e:
@@ -216,8 +261,17 @@ def cancel_alarm():
 def dl_change_state():
     try:
         data = request.get_json()
-        print(data)
         send_mqtt_request(data, "server/pi1/coveredPorch/dl")
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+@app.route('/dms_change_state', methods=['POST'])
+def dms_change_state():
+    try:
+        data = request.get_json()
+        send_mqtt_request(data, "server/pi1/foyer/dms")
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
@@ -232,6 +286,7 @@ def db_change_state():
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
+
 
 @app.route('/bb_change_state', methods=['POST'])
 def bb_change_state():

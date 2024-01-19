@@ -41,7 +41,7 @@ def db_callback(turnOn,publish_event, db_settings, verbose=True):
         textTurnOn = "Sound off"
     if verbose:
         t = time.localtime()
-        print(f"\n{textTurnOn} at {time.strftime('%H:%M:%S', t)}")
+        print(f"\nDB {textTurnOn} at {time.strftime('%H:%M:%S', t)}")
 
     valueTurnOn = 0
     if turnOn:
@@ -68,13 +68,12 @@ def handle_db_message(payload, db_settings):
         turnOn = payload.get("value", False)
         if turnOn:
             turn_on_buzzer()
-            db_callback(turnOn, publish_event, db_settings)
             if db_thread is None or not db_thread.is_alive():
                 db_thread = threading.Thread(target=run_db, args=(db_settings,))
                 db_thread.start()
         else:
             turn_off_buzzer()
-            db_callback(turnOn, publish_event, db_settings)
+        db_callback(turnOn, publish_event, db_settings)
     except Exception as e:
         print(f"Greška u handle_db_message: {e}")
 

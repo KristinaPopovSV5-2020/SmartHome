@@ -41,7 +41,7 @@ def bb_callback(turnOn,publish_event, bb_settings, verbose=True):
         textTurnOn = "Sound off"
     if verbose:
         t = time.localtime()
-        print(f"\n{textTurnOn} at {time.strftime('%H:%M:%S', t)}")
+        print(f"\nBB {textTurnOn} at {time.strftime('%H:%M:%S', t)}")
 
     valueTurnOn = 0
     if turnOn:
@@ -68,13 +68,12 @@ def handle_bb_message(payload, bb_settings):
         turnOn = payload.get("value", False)
         if turnOn:
             turn_on_buzzer()
-            bb_callback(turnOn, publish_event, bb_settings)
             if bb_thread is None or not bb_thread.is_alive():
                 bb_thread = threading.Thread(target=run_bb, args=(bb_settings,))
                 bb_thread.start()
         else:
             turn_off_buzzer()
-            bb_callback(turnOn, publish_event, bb_settings)
+        bb_callback(turnOn, publish_event, bb_settings)
     except Exception as e:
         print(f"Greška u handle_bb_message: {e}")
 

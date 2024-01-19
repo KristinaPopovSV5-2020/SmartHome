@@ -3,12 +3,9 @@
     "name": "DS2",
     "simulated": true,
     "runs_on": "PI2",
-    "topic": "home/foyer/db",
-    "pin": 22,
-    "activation": "b",
-    "activation_off": "m",
-    "pitch": 440,
-    "duration": 0.1
+    "topic": "home/family-foyer/ds2",
+    "topic_single": "home/foyer/ds1-2",
+    "pin": 25
   },
   "LCD": {
     "name": "GLCD",
