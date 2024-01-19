@@ -43,6 +43,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/owners-suite/bir/rgb")
     client.subscribe("home/owners-suite/bir")
     client.subscribe("home/owners-suite/brgb")
+    client.subscribe("home/owners-suite/bb")
 
 
 def on_message(client, userdata, msg):
@@ -66,6 +67,7 @@ def on_message(client, userdata, msg):
         "home/owners-suite/bir": database_save,
         "home/owners-suite/bir/rgb": turn_on_rgb,
         "home/owners-suite/brgb": database_save,
+        "home/owners-suite/bb": database_save,
     }
 
     if topic in topic_method_mapping:
@@ -143,7 +145,6 @@ def activate_alarm():
     print("Alarm aktiviran")
     send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
     time.sleep(2)
-    # saljem value da je true, da bi se palio i gasio na svakih 0.5
     data = {'intermittently': True,
             'turnOn': True}
     send_mqtt_request(data, "server/pi3/owners-suite/b4sd")
@@ -200,10 +201,9 @@ def cancel_alarm():
         data = request.get_json()
         print(data)
         #salje se vrednost false, da se ne bi vise cuo bb
-        send_mqtt_request(data, "server/pi3/owners-suite/bb/cancel")
+        send_mqtt_request(data, "server/pi3/owners-suite/bb")
         print("POSLAto")
         time.sleep(2)
-        #da se prekine prikaz na b4sd-u
         data_b4sd = {'intermittently': False,
                 'turnOn': False}
         send_mqtt_request(data_b4sd, "server/pi3/owners-suite/b4sd")
@@ -229,6 +229,16 @@ def db_change_state():
         data = request.get_json()
         print(data)
         send_mqtt_request(data, "server/pi1/foyer/db")
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+@app.route('/bb_change_state', methods=['POST'])
+def bb_change_state():
+    try:
+        data = request.get_json()
+        print(data)
+        send_mqtt_request(data, "server/pi3/owners-suite/bb")
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
@@ -259,7 +269,6 @@ def bir_change_state():
 @app.route('/b4sd_change_state', methods=['POST'])
 def b4sd_change_state():
     try:
-        #saljem value da je false, da ne bi se palilo i gasilo na svakih 0.5s
         data = request.get_json()
         send_mqtt_request(data, "server/pi3/owners-suite/b4sd")
         return jsonify({"status": "success"})

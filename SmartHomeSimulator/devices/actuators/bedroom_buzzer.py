@@ -21,6 +21,7 @@ def turn_off_buzzer():
     print("ISKLJ", turn_on)
 
 def sim_buzz(settings):
+    global turn_on
     while True:
         print("Cuje se", turn_on)
         if not turn_on:
@@ -29,6 +30,7 @@ def sim_buzz(settings):
     print("Ne cuje se")
 
 def buzz(settings):
+    global turn_on
     pin = settings['pin']
     GPIO.setup(pin, GPIO.OUT)
     pitch = settings['pitch']
@@ -36,7 +38,7 @@ def buzz(settings):
     period = 1.0 / pitch
     delay = period / 2
 
-    while turn_on:
+    while True:
         cycles = int(duration * pitch)
         for i in range(cycles):
             GPIO.output(pin, True)
@@ -44,4 +46,5 @@ def buzz(settings):
             GPIO.output(pin, False)
             time.sleep(delay)
 
-    GPIO.output(pin, False)
+            if not turn_on:
+                break

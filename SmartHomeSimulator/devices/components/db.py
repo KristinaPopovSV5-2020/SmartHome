@@ -5,12 +5,14 @@ from broker_settings import HOSTNAME, PORT
 
 from paho.mqtt import publish
 
+from devices.actuators.door_buzzer import turn_on_buzzer, turn_off_buzzer
+
 db_batch = []
 publish_data_counter = 0
 publish_data_limit = 4
 counter_lock = threading.Lock()
 
-
+db_thread = None
 def publisher_task(event, db_batch):
     global publish_data_counter, publish_data_limit
     while True:
@@ -30,9 +32,8 @@ publisher_thread.daemon = True
 publisher_thread.start()
 
 
-def db_callback(publish_event, db_settings, verbose=True):
+def db_callback(turnOn,publish_event, db_settings, verbose=True):
     global publish_data_counter, publish_data_limit
-    turnOn =  db_settings['turn_on']
     textTurnOn = ""
     if turnOn:
         textTurnOn = "Sound on"
@@ -61,19 +62,28 @@ def db_callback(publish_event, db_settings, verbose=True):
         publish_event.set()
 
 
-def handle_db_message(payload, dl_settings):
-    turn_on = payload.get("value", False)
-    run_db(dl_settings, turn_on)
+def handle_db_message(payload, db_settings):
+    global db_thread
+    try:
+        turnOn = payload.get("value", False)
+        if turnOn:
+            turn_on_buzzer()
+            db_callback(turnOn, publish_event, db_settings)
+            if db_thread is None or not db_thread.is_alive():
+                db_thread = threading.Thread(target=run_db, args=(db_settings,))
+                db_thread.start()
+        else:
+            turn_off_buzzer()
+            db_callback(turnOn, publish_event, db_settings)
+    except Exception as e:
+        print(f"Greška u handle_db_message: {e}")
 
 
 def run_db(settings):
     if settings['simulated']:
         from devices.actuators.door_buzzer import buzz, sim_buzz
         sim_buzz(settings)
-        db_callback(publish_event, settings)
-
     else:
         from devices.actuators.door_buzzer import buzz
         buzz(settings)
-        db_callback(publish_event, settings)
 

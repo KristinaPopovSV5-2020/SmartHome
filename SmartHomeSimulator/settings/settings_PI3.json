@@ -20,7 +20,6 @@
       "runs_on": "PI3",
       "topic": "home/owners-suite/bb",
       "pin": 22,
-      "turn_on": false,
       "pitch": 440,
       "duration": 0.1
     },

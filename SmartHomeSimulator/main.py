@@ -6,7 +6,7 @@ from devices.components.RGB import handle_brgb_message
 from devices.components.b4sd import handle_b4sd_message
 from devices.components.dl import handle_dl_message
 from devices.components.db import handle_db_message
-from devices.components.bb import handle_bb_message, handle_bb_cancel_message
+from devices.components.bb import handle_bb_message
 from devices.components.glcd import handle_lcd_message
 from devices.components.pir import run_pir
 from devices.components.ds import run_ds
@@ -47,7 +47,6 @@ def on_message(client, userdata, msg):
         "server/pi3/owners-suite/bir": handle_bir_message,
         "server/pi3/owners-suite/b4sd": handle_b4sd_message,
         "server/pi3/owners-suite/bb": handle_bb_message,
-        "server/pi3/owners-suite/bb/cancel": handle_bb_cancel_message,
     }
 
     pi_device = topic.split("/")[1]
@@ -74,7 +73,6 @@ def mqtt_subscribe():
     client.subscribe("server/pi3/owners-suite/bir")
     client.subscribe("server/pi3/owners-suite/b4sd")
     client.subscribe("server/pi3/owners-suite/bb")
-    client.subscribe("server/pi3/owners-suite/bb/cancel")
     client.loop_start()
 
 
