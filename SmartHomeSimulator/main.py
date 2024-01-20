@@ -7,6 +7,7 @@ from devices.components.b4sd import handle_b4sd_message
 from devices.components.dl import handle_dl_message
 from devices.components.db import handle_db_message
 from devices.components.bb import handle_bb_message
+from devices.components.dms import handle_dms_message
 from devices.components.glcd import handle_lcd_message
 from devices.components.pir import run_pir
 from devices.components.ds import run_ds
@@ -47,6 +48,7 @@ def on_message(client, userdata, msg):
         "server/pi3/owners-suite/bir": handle_bir_message,
         "server/pi3/owners-suite/b4sd": handle_b4sd_message,
         "server/pi3/owners-suite/bb": handle_bb_message,
+        "server/pi1/foyer/dms": handle_dms_message
     }
 
     pi_device = topic.split("/")[1]
@@ -73,6 +75,7 @@ def mqtt_subscribe():
     client.subscribe("server/pi3/owners-suite/bir")
     client.subscribe("server/pi3/owners-suite/b4sd")
     client.subscribe("server/pi3/owners-suite/bb")
+    client.subscribe("server/pi1/foyer/dms")
     client.loop_start()
 
 
@@ -105,6 +108,12 @@ def run_p1():
 
 def run_p2():
     pi2_settings = load_settings(pi2_location)
+
+    #dus2_settings = pi2_settings['DUS2']
+    #run_dus(dus2_settings, threads, stop_event)
+
+    ds2_settings = pi2_settings['DS2']
+    run_ds(ds2_settings, threads, stop_event)
 
 
 

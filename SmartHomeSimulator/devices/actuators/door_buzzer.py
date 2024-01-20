@@ -23,11 +23,9 @@ def turn_off_buzzer():
 def sim_buzz(settings):
     global turn_on
     while True:
-        print("Sound on", turn_on)
         if not turn_on:
             break
         time.sleep(2)
-    print("Sound off")
 
 
 def buzz(settings):

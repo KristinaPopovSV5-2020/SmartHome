@@ -28,6 +28,7 @@
       "simulated": true,
       "runs_on": "PI1",
       "topic": "home/foyer/ds1",
+      "topic_single": "home/foyer/ds1-2",
       "pin": 25
     },
     "DPIR1": {
@@ -73,6 +74,7 @@
       "simulated": true,
       "runs_on": "PI1",
       "topic": "home/foyer/dms",
+      "topic_single": "home/foyer/dms/single",
       "password": "1234",
       "R1": 25,
       "R2": 8,
