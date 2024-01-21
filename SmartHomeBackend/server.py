@@ -19,7 +19,7 @@ alarm = False
 sent_alarm = False
 
 # InfluxDB Configuration
-token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
+token = "RAIp3pQkJ2XgrGiCBnm630gxcCtPvOUmjzoeZqC5lQSYJY8VYMUrFT9k3xkmB5QkvqYrrGUlE_DaEqqolA6Aew=="
 org = "ftn"
 url = "http://localhost:8086"
 bucket = "iot"
@@ -39,6 +39,15 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/foyer/dms/single")
     client.subscribe("home/foyer/ds1")
     client.subscribe("home/foyer/r-pir1")
+    client.subscribe("home/familyFoyer/ds2")
+    client.subscribe("home/garage/dus2")
+    client.subscribe("home/garage/dpir2")
+    client.subscribe("home/garage/gdht/temperature")
+    client.subscribe("home/garage/gdht/humidity")
+    client.subscribe("home/WIC/gsg")
+    client.subscribe("home/kitchen/rpir3")
+    client.subscribe("home/kitchen/rdht3/temperature")
+    client.subscribe("home/kitchen/rdht3/humidity")
     client.subscribe("home/bedroom2/rdht1/humidity")
     client.subscribe("home/bedroom2/rdht1/temperature")
     client.subscribe("home/bedroom3/rdht2/humidity")
@@ -61,6 +70,15 @@ def on_message(client, userdata, msg):
         "home/coveredPorch/d-pir1": dpir1_save_to_db,
         "home/coveredPorch/d-pir1/single": dpir1_detect_movement,
         "home/foyer/r-pir1": database_save,
+        "home/familyFoyer/ds2": database_save,
+        "home/garage/dus2": database_save,
+        "home/garage/dpir2": database_save,
+        "home/garage/gdht/temperature": database_save,
+        "home/garage/gdht/humidity": database_save,
+        "home/WIC/gsg": gyro_database_save,
+        "home/kitchen/rpir3": database_save,
+        "home/kitchen/rdht3/temperature": database_save,
+        "home/kitchen/rdht3/humidity": database_save,
         "home/openRailing/r-pir2": database_save,
         "home/bedroom2/rdht1/temperature": database_save,
         "home/bedroom2/rdht1/humidity": database_save,
@@ -196,6 +214,25 @@ def set_alarm(alarm_time):
     alarm_time = datetime.now().replace(hour=alarm_time[0], minute=alarm_time[1], second=0, microsecond=0)
     scheduler.add_job(id='activate_alarm', func=activate_alarm, trigger='date', run_date=alarm_time)
 
+def gyro_database_save(payload, msg):
+    print(payload)
+    save_gyro_to_db(json.loads(msg.decode('utf-8')))
+
+def save_gyro_to_db(data):
+    write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
+    point = (
+        Point(data["measurement"])
+        .tag("simulated", data["simulated"])
+        .tag("runs_on", data["runs_on"])
+        .tag("name", data["name"])
+        .field("accel_x", data["accel_x"])
+        .field("accel_y", data["accel_y"])
+        .field("accel_z", data["accel_z"])
+        .field("gyro_x", data["gyro_x"])
+        .field("gyro_y", data["gyro_y"])
+        .field("gyro_z", data["gyro_z"])
+    )
+    write_api.write(bucket=bucket, org=org, record=point)
 
 def save_to_db(data):
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
