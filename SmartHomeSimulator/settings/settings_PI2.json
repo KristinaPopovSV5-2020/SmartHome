@@ -3,12 +3,8 @@
     "name": "DS2",
     "simulated": true,
     "runs_on": "PI2",
-<<<<<<< Updated upstream
-    "topic": "home/family-foyer/ds2",
-    "topic_single": "home/foyer/ds1-2",
-=======
     "topic": "home/familyFoyer/ds2",
->>>>>>> Stashed changes
+    "topic_single": "home/foyer/ds1-2",
     "pin": 25
   },
   "DUS2": {
