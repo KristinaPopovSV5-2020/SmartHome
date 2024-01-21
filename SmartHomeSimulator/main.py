@@ -110,17 +110,8 @@ def run_p1():
 def run_p2():
     pi2_settings = load_settings(pi2_location)
 
-<<<<<<< Updated upstream
-    #dus2_settings = pi2_settings['DUS2']
-    #run_dus(dus2_settings, threads, stop_event)
-
     ds2_settings = pi2_settings['DS2']
     run_ds(ds2_settings, threads, stop_event)
-
-=======
-    ds2_settings = pi2_settings['DS2']
-    run_ds(ds2_settings, threads, stop_event)
->>>>>>> Stashed changes
 
     dus2_settings = pi2_settings['DUS2']
     run_dus(dus2_settings, threads, stop_event)
