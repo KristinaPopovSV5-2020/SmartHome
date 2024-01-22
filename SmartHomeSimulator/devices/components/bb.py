@@ -13,6 +13,7 @@ counter_lock = threading.Lock()
 
 bb_thread = None
 
+
 def publisher_task(event, bb_batch):
     global publish_data_counter, publish_data_limit
     while True:
@@ -32,9 +33,8 @@ publisher_thread.daemon = True
 publisher_thread.start()
 
 
-def bb_callback(turnOn,publish_event, bb_settings, verbose=True):
+def bb_callback(turnOn, publish_event, bb_settings, verbose=True):
     global publish_data_counter, publish_data_limit
-    textTurnOn = ""
     if turnOn:
         textTurnOn = "Sound on"
     else:

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
@@ -29,6 +29,14 @@ influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 mqtt_broker_host = "localhost"
 mqtt_broker_port = 1883
 
+people_inside = 0
+people_inside_lock = threading.Lock()
+last_dus1_value = None
+new_dus1_value = None
+last_dus2_value = None
+new_dus2_value = None
+previous_gyro_data = None
+
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("home/coveredPorch/dl")
@@ -39,13 +47,16 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/foyer/dms/single")
     client.subscribe("home/foyer/ds1")
     client.subscribe("home/foyer/r-pir1")
+    client.subscribe("home/foyer/r-pir1/single")
     client.subscribe("home/familyFoyer/ds2")
     client.subscribe("home/garage/dus2")
     client.subscribe("home/garage/dpir2")
+    client.subscribe("home/garage/dpir2/single")
     client.subscribe("home/garage/gdht/temperature")
     client.subscribe("home/garage/gdht/humidity")
     client.subscribe("home/WIC/gsg")
     client.subscribe("home/kitchen/rpir3")
+    client.subscribe("home/kitchen/rpir3/single")
     client.subscribe("home/kitchen/rdht3/temperature")
     client.subscribe("home/kitchen/rdht3/humidity")
     client.subscribe("home/bedroom2/rdht1/humidity")
@@ -53,12 +64,15 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/bedroom3/rdht2/humidity")
     client.subscribe("home/bedroom3/rdht2/temperature")
     client.subscribe("home/openRailing/r-pir2")
+    client.subscribe("home/openRailing/r-pir2/single")
     client.subscribe("home/coveredPorch/d-pir1/single")
     client.subscribe("home/owners-suite/bir/rgb")
     client.subscribe("home/owners-suite/bir")
     client.subscribe("home/owners-suite/brgb")
     client.subscribe("home/owners-suite/bb")
     client.subscribe("home/foyer/ds1-2")
+    client.subscribe("home/dinette/rpir4")
+    client.subscribe("home/dinette/rpir4/single")
 
 
 def on_message(client, userdata, msg):
@@ -70,23 +84,27 @@ def on_message(client, userdata, msg):
         "home/coveredPorch/d-pir1": dpir1_save_to_db,
         "home/coveredPorch/d-pir1/single": dpir1_detect_movement,
         "home/foyer/r-pir1": database_save,
+        "home/foyer/r-pir1/single": rpir_detect_movement,
         "home/familyFoyer/ds2": database_save,
-        "home/garage/dus2": database_save,
+        "home/garage/dus2": dus2_detect_movement,
         "home/garage/dpir2": database_save,
-        "home/garage/gdht/temperature": database_save,
-        "home/garage/gdht/humidity": database_save,
+        "home/garage/dpir2/single": dpir2_detect_movement,
+        "home/garage/gdht/temperature": handle_gdht_message,
+        "home/garage/gdht/humidity": handle_gdht_message,
         "home/WIC/gsg": gyro_database_save,
         "home/kitchen/rpir3": database_save,
+        "home/kitchen/rpir3/single": rpir_detect_movement,
         "home/kitchen/rdht3/temperature": database_save,
         "home/kitchen/rdht3/humidity": database_save,
         "home/openRailing/r-pir2": database_save,
+        "home/openRailing/r-pir2/single": rpir_detect_movement,
         "home/bedroom2/rdht1/temperature": database_save,
         "home/bedroom2/rdht1/humidity": database_save,
         "home/bedroom2/rdht2/temperature": database_save,
         "home/bedroom2/rdht2/humidity": database_save,
         "home/foyer/dms": database_save,
         "home/foyer/dms/single": dms_detect_password,
-        "home/coveredPorch/d-us1": database_save,
+        "home/coveredPorch/d-us1": dus1_detect_movement,
         "home/foyer/ds1": database_save,
         "home/foyer/db": database_save,
         "home/owners-suite/bir": database_save,
@@ -94,6 +112,8 @@ def on_message(client, userdata, msg):
         "home/owners-suite/brgb": database_save,
         "home/owners-suite/bb": database_save,
         "home/foyer/ds1-2": ds1_ds2_detect,
+        "home/dinette/rpir4": database_save,
+        "home/dinette/rpir4/single": rpir_detect_movement
     }
 
     if topic in topic_method_mapping:
@@ -121,7 +141,6 @@ def dpir1_save_to_db(payload, msg):
 def ds1_ds2_detect(payload, msg):
     global system_activated, sent_alarm
     value = payload['value']
-    sent = False
     if value:
         if system_activated and alarm and not sent_alarm:
             sent_alarm = True
@@ -129,7 +148,6 @@ def ds1_ds2_detect(payload, msg):
             send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
             time.sleep(0.5)
             send_mqtt_request({'value': True}, "server/pi1/foyer/db")
-
 
 
 def send_mqtt_request(payload, mqtt_topic):
@@ -163,9 +181,75 @@ def dms_detect_password(payload, msg):
 
 def dpir1_detect_movement(payload, msg):
     print(payload)
+    update_people_inside_dus1()
     if payload["value"]:
         send_mqtt_request({"value": True}, "server/pi1/coveredPorch/dl")
         threading.Timer(10, send_mqtt_request, args=({"value": False}, "server/pi1/coveredPorch/dl")).start()
+
+
+def dpir2_detect_movement(payload, msg):
+    print(payload)
+    update_people_inside_dus2()
+
+
+def rpir_detect_movement(payload, msg):
+    global people_inside, alarm, sent_alarm
+    if people_inside == 0:
+        alarm = True
+        if not sent_alarm:
+            sent_alarm = True
+            print("BUZZZZ")
+            send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
+            time.sleep(0.5)
+            send_mqtt_request({'value': True}, "server/pi1/foyer/db")
+
+
+def update_people_inside_dus1():
+    global people_inside, last_dus1_value, new_dus1_value, alarm, sent_alarm
+    with people_inside_lock:
+        if new_dus1_value < last_dus1_value:
+            people_inside += 1
+        elif new_dus1_value > last_dus1_value:
+            people_inside -= 1
+        if people_inside < 0:
+            people_inside = 0
+    print("PEOPLE INSIDE: ", people_inside)
+
+
+def update_people_inside_dus2():
+    global people_inside, last_dus2_value, new_dus2_value, alarm, sent_alarm
+    with people_inside_lock:
+        if new_dus2_value < last_dus2_value:
+            people_inside += 1
+        elif new_dus2_value > last_dus2_value:
+            people_inside -= 1
+        if people_inside < 0:
+            people_inside = 0
+    print("PEOPLE INSIDE: ", people_inside)
+
+
+def dus1_detect_movement(payload, msg):
+    global last_dus1_value, new_dus1_value
+    print(payload)
+    last_dus1_value = new_dus1_value
+    new_dus1_value = payload["value"]
+    database_save(payload, msg)
+
+
+def dus2_detect_movement(payload, msg):
+    global last_dus2_value, new_dus2_value
+    print(payload)
+    last_dus2_value = new_dus2_value
+    new_dus2_value = payload["value"]
+    database_save(payload, msg)
+
+
+def handle_gdht_message(payload, msg):
+    if payload["measurement"] == "Temperature":
+        send_mqtt_request({"temperature": payload["value"]}, "server/pi2/garage/glcd")
+    elif payload["measurement"] == "Humidity":
+        send_mqtt_request({"humidity": payload["value"]}, "server/pi2/garage/glcd")
+    database_save(payload, msg)
 
 
 def turn_on_rgb(payload, msg):
@@ -214,9 +298,32 @@ def set_alarm(alarm_time):
     alarm_time = datetime.now().replace(hour=alarm_time[0], minute=alarm_time[1], second=0, microsecond=0)
     scheduler.add_job(id='activate_alarm', func=activate_alarm, trigger='date', run_date=alarm_time)
 
+
+def check_and_trigger_alarm_gyro(payload, previous_data, keys, threshold):
+    global alarm, sent_alarm
+    for key in keys:
+        if abs(payload[key] - previous_data[key]) > threshold:
+            alarm = True
+            if not sent_alarm:
+                sent_alarm = True
+                print("BUZZZZ")
+                send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
+                time.sleep(0.5)
+                send_mqtt_request({'value': True}, "server/pi1/foyer/db")
+
 def gyro_database_save(payload, msg):
+    global previous_gyro_data
     print(payload)
     save_gyro_to_db(json.loads(msg.decode('utf-8')))
+
+    # Compare with previous data
+    if previous_gyro_data is not None:
+        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['accel_x', 'accel_y', 'accel_z'], 0.2)
+        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['gyro_x', 'gyro_y', 'gyro_z'], 20)
+
+    # Update previous data
+    previous_gyro_data = payload
+
 
 def save_gyro_to_db(data):
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
@@ -233,6 +340,7 @@ def save_gyro_to_db(data):
         .field("gyro_z", data["gyro_z"])
     )
     write_api.write(bucket=bucket, org=org, record=point)
+
 
 def save_to_db(data):
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
@@ -276,7 +384,6 @@ def set_alarms():
         return jsonify({"status": "error", "message": str(e)})
 
 
-
 @app.route('/cancel_alarm', methods=['POST'])
 def cancel_alarm():
     try:
@@ -284,7 +391,7 @@ def cancel_alarm():
         print(data)
         # salje se vrednost false, da se ne bi vise cuo bb
         send_mqtt_request(data, "server/pi3/owners-suite/bb")
-        print("POSLAto")
+        print("POSLATO")
         time.sleep(2)
         data_b4sd = {'intermittently': False,
                      'turnOn': False}
