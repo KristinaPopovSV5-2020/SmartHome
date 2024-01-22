@@ -5,6 +5,7 @@
     "runs_on": "PI2",
     "topic": "home/family-foyer/ds2",
     "topic_single": "home/foyer/ds1-2",
+    "topic_duration": "home/foyer/ds1-2/duration",
     "pin": 25
   },
   "LCD": {

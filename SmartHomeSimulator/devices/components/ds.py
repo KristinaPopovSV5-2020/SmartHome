@@ -11,6 +11,10 @@ publish_data_counter = 0
 publish_data_limit = 5
 counter_lock = threading.Lock()
 
+start_time = None
+duration = 0
+
+
 def publisher_task(event, ds_batch):
     global publish_data_counter, publish_data_limit
     while True:
@@ -30,8 +34,8 @@ publisher_thread.daemon = True
 publisher_thread.start()
 
 
-def ds_callback(button_press, publish_event, ds_settings, verbose=True):
-    global publish_data_counter, publish_data_limit
+def ds_callback(button_press, button_press_duration, publish_event, ds_settings, verbose=True):
+    global publish_data_counter, publish_data_limit, start_time, duration
 
     if verbose:
         t = time.localtime()
@@ -53,13 +57,33 @@ def ds_callback(button_press, publish_event, ds_settings, verbose=True):
     if publish_data_counter >= publish_data_limit:
         publish_event.set()
 
-    publish.single(topic=ds_settings['topic_single'], payload=json.dumps(button_press_payload), hostname=HOSTNAME, port=PORT)
+    publish.single(topic=ds_settings['topic_single'], payload=json.dumps(button_press_payload), hostname=HOSTNAME,
+                   port=PORT)
+
+    if not ds_settings['simulated']:
+        if button_press:
+            if start_time is None:
+                start_time = time.time()
+        else:
+            if start_time is not None:
+                duration = time.time() - start_time
+                if duration > 5:
+                    publish.single(topic=ds_settings['topic_duration'], payload=json.dumps(button_press_payload),
+                                   hostname=HOSTNAME,
+                                   port=PORT)
+                start_time = None
+                duration = 0
+
+    if button_press_duration > 5 and button_press:
+        publish.single(topic=ds_settings['topic_duration'], payload=json.dumps(button_press_payload), hostname=HOSTNAME,
+                       port=PORT)
 
 
 def run_ds(settings, threads, stop_event):
     if settings['simulated']:
         print("Starting " + settings["name"] + " simulator")
-        ds1_thread = threading.Thread(target=run_ds_simulator, args=(5, ds_callback, stop_event, publish_event, settings))
+        ds1_thread = threading.Thread(target=run_ds_simulator,
+                                      args=(5, ds_callback, stop_event, publish_event, settings))
         ds1_thread.start()
         threads.append(ds1_thread)
         print(settings["name"] + " simulator started")
@@ -67,7 +91,7 @@ def run_ds(settings, threads, stop_event):
         from devices.sensors.ds import run_ds_loop
         print("Starting " + settings["name"] + " loop")
         ds1_thread = threading.Thread(target=run_ds_loop,
-                                       args=(settings,ds_callback, stop_event, publish_event))
+                                      args=(settings, ds_callback, stop_event, publish_event))
         ds1_thread.start()
         threads.append(ds1_thread)
         print(settings["name"] + " loop started")

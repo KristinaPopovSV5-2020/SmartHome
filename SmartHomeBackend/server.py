@@ -18,6 +18,8 @@ system_activated = False
 alarm = False
 sent_alarm = False
 
+
+
 # InfluxDB Configuration
 token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
 org = "ftn"
@@ -50,6 +52,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/owners-suite/brgb")
     client.subscribe("home/owners-suite/bb")
     client.subscribe("home/foyer/ds1-2")
+    client.subscribe("home/foyer/ds1-2/duration")
 
 
 def on_message(client, userdata, msg):
@@ -76,6 +79,7 @@ def on_message(client, userdata, msg):
         "home/owners-suite/brgb": database_save,
         "home/owners-suite/bb": database_save,
         "home/foyer/ds1-2": ds1_ds2_detect,
+        "home/foyer/ds1-2/duration": ds1_ds2_duration,
     }
 
     if topic in topic_method_mapping:
@@ -101,9 +105,8 @@ def dpir1_save_to_db(payload, msg):
 
 
 def ds1_ds2_detect(payload, msg):
-    global system_activated, sent_alarm
+    global system_activated,alarm, sent_alarm
     value = payload['value']
-    sent = False
     if value:
         if system_activated and alarm and not sent_alarm:
             sent_alarm = True
@@ -111,6 +114,26 @@ def ds1_ds2_detect(payload, msg):
             send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
             time.sleep(0.5)
             send_mqtt_request({'value': True}, "server/pi1/foyer/db")
+    else:
+        if alarm and sent_alarm:
+            alarm = False
+            sent_alarm = False
+            print("Sound off")
+            send_mqtt_request({'value': False}, "server/pi3/owners-suite/bb")
+            time.sleep(0.5)
+            send_mqtt_request({'value': False}, "server/pi1/foyer/db")
+
+
+
+def ds1_ds2_duration(payload, msg):
+    global alarm, sent_alarm
+    if not alarm and not sent_alarm:
+        sent_alarm = True
+        alarm = True
+        print("BUZZZZ")
+        send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
+        time.sleep(0.5)
+        send_mqtt_request({'value': True}, "server/pi1/foyer/db")
 
 
 
