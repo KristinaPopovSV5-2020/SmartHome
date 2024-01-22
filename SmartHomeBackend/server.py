@@ -10,6 +10,7 @@ import time
 from flask import Flask, jsonify, request
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_query import simple_query, gyro_query
 
 app = Flask(__name__)
 scheduler = APScheduler()
@@ -21,7 +22,7 @@ sent_alarm = False
 
 
 # InfluxDB Configuration
-token = "RAIp3pQkJ2XgrGiCBnm630gxcCtPvOUmjzoeZqC5lQSYJY8VYMUrFT9k3xkmB5QkvqYrrGUlE_DaEqqolA6Aew=="
+token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
 org = "ftn"
 url = "http://localhost:8086"
 bucket = "iot"
@@ -76,6 +77,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/foyer/ds1-2/duration")
     client.subscribe("home/dinette/rpir4")
     client.subscribe("home/dinette/rpir4/single")
+    client.subscribe("home/owners-suite/rdht4/temperature")
+    client.subscribe("home/owners-suite/rdht4/humidity")
 
 
 def on_message(client, userdata, msg):
@@ -103,8 +106,8 @@ def on_message(client, userdata, msg):
         "home/openRailing/r-pir2/single": rpir_detect_movement,
         "home/bedroom2/rdht1/temperature": database_save,
         "home/bedroom2/rdht1/humidity": database_save,
-        "home/bedroom2/rdht2/temperature": database_save,
-        "home/bedroom2/rdht2/humidity": database_save,
+        "home/bedroom3/rdht2/temperature": database_save,
+        "home/bedroom3/rdht2/humidity": database_save,
         "home/foyer/dms": database_save,
         "home/foyer/dms/single": dms_detect_password,
         "home/coveredPorch/d-us1": dus1_detect_movement,
@@ -117,7 +120,9 @@ def on_message(client, userdata, msg):
         "home/foyer/ds1-2": ds1_ds2_detect,
         "home/foyer/ds1-2/duration": ds1_ds2_duration,
         "home/dinette/rpir4": database_save,
-        "home/dinette/rpir4/single": rpir_detect_movement
+        "home/dinette/rpir4/single": rpir_detect_movement,
+        "home/owners-suite/rdht4/temperature": database_save,
+        "home/owners-suite/rdht4/humidity": database_save,
     }
 
     if topic in topic_method_mapping:
@@ -378,19 +383,7 @@ def save_to_db(data):
     write_api.write(bucket=bucket, org=org, record=point)
 
 
-def handle_influx_query(query):
-    try:
-        query_api = influxdb_client.query_api()
-        tables = query_api.query(query, org=org)
 
-        container = []
-        for table in tables:
-            for record in table.records:
-                container.append(record.values)
-
-        return jsonify({"status": "success", "data": container})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
 
 
 # ENDPOINTS RELATED TO DEVICES
@@ -508,22 +501,61 @@ def store_data():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
+def handle_influx_query(query):
+    query_api = influxdb_client.query_api()
+    tables = query_api.query(query, org=org)
 
-@app.route('/simple_query', methods=['GET'])
-def retrieve_simple_data():
-    query = f"""from(bucket: "{bucket}")
-    |> range(start: -10m)
-    |> filter(fn: (r) => r._measurement == "Temperature")"""
-    return handle_influx_query(query)
+    selected_columns = {}
+    for table in tables:
+        for record in table.records:
+            selected_columns = {
+                "_measurement": record.get_measurement(),
+                "_time": record.get_time(),
+                "_value": record.get_value(),
+                "name": record.values["name"],
+                "runs_on": record.values["runs_on"],
+                "simulated": record.values["simulated"]
+            }
+
+    return selected_columns
+
+def handle_influx_gyro_query(query):
+    query_api = influxdb_client.query_api()
+    tables = query_api.query(query, org=org)
+
+    selected_columns = {}
+    for table in tables:
+        for record in table.records:
+            selected_columns = {"_measurement": record.get_measurement(), "_time": record.get_time(),
+                                "name": record.values["name"], "runs_on": record.values["runs_on"],
+                                "simulated": record.values["simulated"], "_value": [record.get_value()]}
+
+    return selected_columns
+
+
 
 
 @app.route('/aggregate_query', methods=['GET'])
 def retrieve_aggregate_data():
-    query = f"""from(bucket: "{bucket}")
-    |> range(start: -10m)
-    |> filter(fn: (r) => r._measurement == "Temperature")
-    |> mean()"""
-    return handle_influx_query(query)
+    data = []
+    try:
+        measurement_name_pair = [("DS","DS1"),("DL","DL"),("DUS","DUS1"),("DB","DB"),("PIR","DPIR1"),("DMS","DMS"),
+                             ("PIR","RPIR1"),("PIR","RPIR2"),("Humidity","RDHT1"),("Humidity","RDHT2"),("Temperature","RDHT1"),
+                             ("Temperature", "RDHT2"), ("PIR","RPIR4"),("Humidity","RDHT4"),("Temperature","RDHT4"),("BB","BB"),("BIR","BIR"),("RGB","BRGB"),
+                                 ("DS","DS2"),("DUS","DUS2"),("PIR","DPIR2"),("Humidity","GDHT"),("Temperature","GDHT"),("PIR","RPIR3"),("Humidity","RDHT3"),("Temperature","RDHT3")
+                             ]
+        for (m,n) in measurement_name_pair:
+            query = simple_query(m,n)
+            selected = handle_influx_query(query)
+            data.append(selected)
+        #g_query = gyro_query()
+        #qyro_selected = handle_influx_query(g_query)
+        #data.append(qyro_selected)
+        return jsonify({"status": "success", "data": data})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
 
 
 if __name__ == '__main__':
