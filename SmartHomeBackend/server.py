@@ -519,25 +519,28 @@ def handle_influx_query(query):
 
     return selected_columns
 
-def handle_influx_gyro_query(query):
-    query_api = influxdb_client.query_api()
-    tables = query_api.query(query, org=org)
 
-    selected_columns = {}
-    for table in tables:
-        for record in table.records:
-            selected_columns = {"_measurement": record.get_measurement(), "_time": record.get_time(),
-                                "name": record.values["name"], "runs_on": record.values["runs_on"],
-                                "simulated": record.values["simulated"], "_value": [record.get_value()]}
+def export_container_gyro(container):
+    unique_container = {"_measurement": "", "_time": "", "_value": [], "name": "", "runs_on": "", "simulated": ""}
 
-    return selected_columns
+    if container:
+        first_record = container[0]
+        unique_container['_measurement'] = first_record['_measurement']
+        unique_container["_time"] = first_record["_time"]
+        unique_container['_value'].append(first_record['_value'])
+        unique_container['name'] = first_record['name']
+        unique_container['runs_on'] = first_record['runs_on']
+        unique_container['simulated'] = first_record['simulated']
 
+        for c in container[1:]:
+            unique_container['_value'].append(c['_value'])
 
-
+    return unique_container
 
 @app.route('/aggregate_query', methods=['GET'])
 def retrieve_aggregate_data():
     data = []
+    data_gyro = []
     try:
         measurement_name_pair = [("DS","DS1"),("DL","DL"),("DUS","DUS1"),("DB","DB"),("PIR","DPIR1"),("DMS","DMS"),
                              ("PIR","RPIR1"),("PIR","RPIR2"),("Humidity","RDHT1"),("Humidity","RDHT2"),("Temperature","RDHT1"),
@@ -548,9 +551,12 @@ def retrieve_aggregate_data():
             query = simple_query(m,n)
             selected = handle_influx_query(query)
             data.append(selected)
-        #g_query = gyro_query()
-        #qyro_selected = handle_influx_query(g_query)
-        #data.append(qyro_selected)
+        g_queries = gyro_query()
+        for g_query in g_queries:
+            gyro_selected = handle_influx_query(g_query)
+            data_gyro.append(gyro_selected)
+            print(gyro_selected)
+        data.append(export_container_gyro(data_gyro))
         return jsonify({"status": "success", "data": data})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
