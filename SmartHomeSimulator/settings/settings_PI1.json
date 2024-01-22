@@ -29,6 +29,7 @@
       "runs_on": "PI1",
       "topic": "home/foyer/ds1",
       "topic_single": "home/foyer/ds1-2",
+      "topic_duration": "home/foyer/ds1-2/duration",
       "pin": 25
     },
     "DPIR1": {
