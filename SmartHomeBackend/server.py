@@ -505,7 +505,7 @@ def handle_influx_query(query):
     query_api = influxdb_client.query_api()
     tables = query_api.query(query, org=org)
 
-    selected_columns = {}
+    selected_columns = []
     for table in tables:
         for record in table.records:
             selected_columns = {

@@ -1,0 +1,50 @@
+#navigation {
+    width: 100%;
+    height: 10%;
+    justify-content: flex-end;
+  }
+  
+  span{
+    color:white
+  }
+  .example-spacer {
+    flex: 1 1 auto;
+  }
+  
+  .logo_name{
+    margin-left: 20px;
+    font-size: 25px;
+    font-weight: bold;
+    color: rgb(16, 29, 148);
+  }
+  mat-mdc-icon-button {
+    margin-top: 0px;
+    padding-top: 0px;
+  
+  }
+
+  #toolbar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    z-index: 100; 
+  }
+  
+  mat-toolbar-single-row{
+  
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+  }
+
+  .text-box {
+    font-size: medium;
+    padding: 4px; /* Optional padding to create some spacing around the text */
+    border-radius: 20px;
+    background-color: rgb(224, 172, 41);
+    color: white;
+    font-weight: bold;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}

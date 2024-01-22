@@ -1,0 +1,7 @@
+a{
+    color: black;
+    padding: 15px;
+}
+a:hover {
+    color: rgb(16, 29, 148);
+  }

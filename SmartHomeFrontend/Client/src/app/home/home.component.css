@@ -1,0 +1,91 @@
+
+.deviceBox {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.list-item {
+    background-color: #f8f9fa; /* Light background color */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px; /* Padding for content */
+    margin-bottom: 10px; /* Margin between list items */
+    display: flex; /* Use flexbox for layout */
+    align-items: center; /* Center content vertically */
+}
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px; /* Margin between title and picture */
+}
+
+body {
+    margin-top: 10%;
+    height: 150%;
+}
+
+
+.mat-card {
+    width: 100px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+  
+  .content > mat-card {
+    width: 100px;
+  }
+.centeredDiv{
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}
+.space-between{
+    display: flex;
+    align-items: center;
+    margin: 0  auto;
+    width: 100%;
+   
+}
+
+span.material-icons{
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+span.material-symbols-outlined{
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h4{
+  margin-left: 5px;
+}
+.centerIcon{
+    padding: 4px;
+    margin-bottom: -9px;
+  }
+  
+h2{
+  display: flex;
+}
+
+.fixed-button {
+  background-color: #ff8e00 !important;
+  position: fixed;
+  font-size: 18px;
+  border-radius: 14px;
+  font-weight: bold;
+  bottom: 20px; /* Adjust as needed for the desired vertical position */
+  right: 20px; /* Adjust as needed for the desired horizontal position */
+}
