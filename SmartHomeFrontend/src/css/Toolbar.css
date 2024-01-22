@@ -1,0 +1,28 @@
+/* Toolbar.css */
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background-color: #87CEEB;
+    overflow: hidden;
+  }
+  
+  .menu li {
+    float: right;
+  }
+  
+  .menu li a {
+    display: block;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  .menu li a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  

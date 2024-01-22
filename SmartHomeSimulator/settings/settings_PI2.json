@@ -3,16 +3,60 @@
     "name": "DS2",
     "simulated": true,
     "runs_on": "PI2",
-    "topic": "home/family-foyer/ds2",
+    "topic": "home/familyFoyer/ds2",
     "topic_single": "home/foyer/ds1-2",
     "topic_duration": "home/foyer/ds1-2/duration",
     "pin": 25
   },
-  "LCD": {
+  "DUS2": {
+    "name": "DUS2",
+    "simulated": true,
+    "runs_on": "PI2",
+    "topic": "home/garage/dus2",
+    "pin_trig": 5,
+    "pin_echo": 6
+  },
+  "DPIR2": {
+    "name": "DPIR2",
+    "simulated": true,
+    "runs_on": "PI2",
+    "topic": "home/garage/dpir2",
+    "topic_single": "home/garage/dpir2/single",
+    "pin": 23
+  },
+  "GDHT": {
+    "name": "GDHT",
+    "simulated": true,
+    "runs_on": "PI2",
+    "topic": "home/garage/gdht",
+    "pin": 23
+  },
+  "GLCD": {
     "name": "GLCD",
     "simulated": true,
     "runs_on": "PI2",
     "pin_sda": 2,
     "pin_scl": 3
+  },
+  "GSG": {
+    "name": "GSG",
+    "simulated": true,
+    "runs_on": "PI2",
+    "topic": "home/WIC/gsg"
+  },
+  "RPIR3": {
+    "name": "RPIR3",
+    "simulated": true,
+    "runs_on": "PI2",
+    "topic": "home/kitchen/rpir3",
+    "topic_single": "home/kitchen/rpir3/single",
+    "pin": 4
+  },
+  "RDHT3": {
+    "name": "RDHT3",
+    "simulated": true,
+    "runs_on": "PI2",
+    "topic": "home/kitchen/rdht3",
+    "pin": 23
   }
 }

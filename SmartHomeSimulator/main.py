@@ -13,6 +13,7 @@ from devices.components.pir import run_pir
 from devices.components.ds import run_ds
 from devices.components.dus import run_dus
 from devices.components.bir import run_bir, handle_bir_message
+from devices.components.gyro import run_gyro
 from settings import load_settings
 from devices.components.dht import run_dht
 from devices.components.dms import run_dms
@@ -43,7 +44,7 @@ def on_message(client, userdata, msg):
     topic_method_mapping = {
         "server/pi1/coveredPorch/dl": handle_dl_message,
         "server/pi1/foyer/db": handle_db_message,
-        "server/pi2/garage/lcd": handle_lcd_message,
+        "server/pi2/garage/glcd": handle_lcd_message,
         "server/pi3/owners-suite/brgb": handle_brgb_message,
         "server/pi3/owners-suite/bir": handle_bir_message,
         "server/pi3/owners-suite/b4sd": handle_b4sd_message,
@@ -66,11 +67,11 @@ def on_message(client, userdata, msg):
 def mqtt_subscribe():
     client = mqtt.Client()
     client.on_message = on_message
-    #client.connect("10.1.121.34", 1883, 60)
+    # client.connect("10.1.121.34", 1883, 60)
     client.connect("localhost", 1883, 60)
     client.subscribe("server/pi1/coveredPorch/dl")
     client.subscribe("server/pi1/foyer/db")
-    client.subscribe("server/pi2/garage/lcd")
+    client.subscribe("server/pi2/garage/glcd")
     client.subscribe("server/pi3/owners-suite/brgb")
     client.subscribe("server/pi3/owners-suite/bir")
     client.subscribe("server/pi3/owners-suite/b4sd")
@@ -109,13 +110,26 @@ def run_p1():
 def run_p2():
     pi2_settings = load_settings(pi2_location)
 
-    #dus2_settings = pi2_settings['DUS2']
-    #run_dus(dus2_settings, threads, stop_event)
-
     ds2_settings = pi2_settings['DS2']
     run_ds(ds2_settings, threads, stop_event)
 
+    dus2_settings = pi2_settings['DUS2']
+    run_dus(dus2_settings, threads, stop_event)
 
+    dpir2_settings = pi2_settings['DPIR2']
+    run_pir(dpir2_settings, threads, stop_event)
+
+    gdht_settings = pi2_settings['GDHT']
+    run_dht(gdht_settings, threads, stop_event)
+
+    gsg_settings = pi2_settings['GSG']
+    run_gyro(gsg_settings, threads, stop_event)
+
+    rpir3_settings = pi2_settings['RPIR3']
+    run_pir(rpir3_settings, threads, stop_event)
+
+    rdht3_settings = pi2_settings['RDHT3']
+    run_dht(rdht3_settings, threads, stop_event)
 
 
 def run_p3():
@@ -129,6 +143,7 @@ def run_p3():
 
     bir_settings = pi3_settings['BIR']
     run_bir(bir_settings, threads, stop_event)
+
 
 if __name__ == "__main__":
     mqtt_subscribe()
