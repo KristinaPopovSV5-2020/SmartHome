@@ -44,7 +44,7 @@ def on_message(client, userdata, msg):
     topic_method_mapping = {
         "server/pi1/coveredPorch/dl": handle_dl_message,
         "server/pi1/foyer/db": handle_db_message,
-        "server/pi2/garage/lcd": handle_lcd_message,
+        "server/pi2/garage/glcd": handle_lcd_message,
         "server/pi3/owners-suite/brgb": handle_brgb_message,
         "server/pi3/owners-suite/bir": handle_bir_message,
         "server/pi3/owners-suite/b4sd": handle_b4sd_message,
@@ -71,7 +71,7 @@ def mqtt_subscribe():
     client.connect("localhost", 1883, 60)
     client.subscribe("server/pi1/coveredPorch/dl")
     client.subscribe("server/pi1/foyer/db")
-    client.subscribe("server/pi2/garage/lcd")
+    client.subscribe("server/pi2/garage/glcd")
     client.subscribe("server/pi3/owners-suite/brgb")
     client.subscribe("server/pi3/owners-suite/bir")
     client.subscribe("server/pi3/owners-suite/b4sd")
