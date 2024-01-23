@@ -13,7 +13,6 @@
             <div class="rectangle">
                 <p>{{b4sd}}</p>
             </div>
-            <button  mat-button (click)="displayCurrentTime()">Display current time</button>
           </div>
           <div class="col">
             <h3 style="font-weight: bold;">People inside:</h3>
@@ -303,5 +302,5 @@
   <button mat-raised-button class="fixed-button" (click)="openDMSDialog()">DMS</button>
   <button mat-raised-button class="fixed-button1" (click)="openBIRDialog()">BIR</button>
   <button mat-raised-button class="fixed-button2" (click)="openAlarmDialog()"><mat-icon >alarm</mat-icon>Alarm</button>
-
+  <button mat-button class="fixed-button3" *ngIf="isButtonEnableCancelAlarm" (click)="stopAlarm()"><mat-icon >stop</mat-icon></button>
 </body>

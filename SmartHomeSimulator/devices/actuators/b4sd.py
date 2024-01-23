@@ -43,12 +43,12 @@ def display_simulator(device):
     global turn_on, intermittently
     current_time = datetime.now().strftime("%H:%M")
     while True:
-        print(device['name'], " display is", current_time)
+        #print(device['name'], " display is", current_time)
         if intermittently:
             time.sleep(0.5)
         if not turn_on:
             break
-    print(device['name'], " does not display.")
+    #print(device['name'], " does not display.")
 
 
 def display(device):

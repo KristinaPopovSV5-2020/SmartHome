@@ -61,6 +61,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.refresh();
+    this.displayCurrentTime();
     
 
     this.socket.fromEvent<string>('brgb')
@@ -88,6 +89,16 @@ export class HomeComponent implements OnInit {
         }
       });
 
+      this.socket.fromEvent<string>('dl')
+      .subscribe((message: any) => {
+        for (let d of this.devices){
+          if (d._measurement === "DL"){
+            d._value = message.value;
+          }
+        }
+      });
+
+
     this.socket.fromEvent<string>('people')
       .subscribe((message: any) => {
         this.peopleCount = message;
@@ -96,9 +107,11 @@ export class HomeComponent implements OnInit {
     this.socket.fromEvent<string>('alarm')
       .subscribe((message: any) => {
         this.soundOn = message == true;
+        this.displayCurrentTime();
       });
-    
-   
+
+      
+
   }
 
 
@@ -174,14 +187,10 @@ export class HomeComponent implements OnInit {
   displayCurrentTime():void{
     this.service.b4sdChangeDevice().subscribe({next:
       (response)=>{
-        if (response.intermittently){
-
-        }else{
-          const now = new Date();
+        const now = new Date();
           const hours = this.padZero(now.getHours());
           const minutes = this.padZero(now.getMinutes());
           this.b4sd =  `${hours}:${minutes}`
-        }
       }, error: (error)=> {
         console.error(error)
       }})
@@ -197,19 +206,9 @@ export class HomeComponent implements OnInit {
   stopAlarm(): void{
     this.service.cancelAlarm().subscribe({next:
       (response)=>{
-        this.isButtonEnableCancelAlarm = false
       }, error: (error)=> {
         console.error(error)
       }})
-  openAlarmDialog():void{
-    const dialogRef = this.dialog.open(AlarmDialogComponent);
-
   }
-
-  openBIRDialog():void{
-    const dialogRef = this.dialog.open(BirDialogComponent);
-
-  }
-
-
+ 
 }

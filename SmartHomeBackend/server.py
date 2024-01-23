@@ -25,7 +25,7 @@ sent_alarm = False
 
 
 # InfluxDB Configuration
-token = "RAIp3pQkJ2XgrGiCBnm630gxcCtPvOUmjzoeZqC5lQSYJY8VYMUrFT9k3xkmB5QkvqYrrGUlE_DaEqqolA6Aew=="
+token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
 org = "ftn"
 url = "http://localhost:8086"
 bucket = "iot"
@@ -83,7 +83,6 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/dinette/rpir4/single")
     client.subscribe("home/owners-suite/rdht4/temperature")
     client.subscribe("home/owners-suite/rdht4/humidity")
-    client.subscribe("home/owners-suite/b4sd")
 
 
 def on_message(client, userdata, msg):
@@ -129,7 +128,6 @@ def on_message(client, userdata, msg):
         "home/owners-suite/rdht4/temperature": database_save,
         "home/owners-suite/rdht4/humidity": database_save,
         "home/owners-suite/brgb/single": detect_change_color_rgb,
-        "home/owners-suite/b4sd": display_current_time,
     }
 
     if topic in topic_method_mapping:
@@ -149,8 +147,6 @@ def database_save(payload, msg):
     print(payload)
     save_to_db(json.loads(msg.decode('utf-8')))
 
-def display_current_time(payload, msg):
-    socketio.emit('b4sd', payload)
 
 
 def ds1_ds2_detect(payload, msg):
@@ -225,8 +221,10 @@ def dpir1_detect_movement(payload, msg):
     print(payload)
     update_people_inside_dus1()
     if payload["value"]:
+        socketio.emit('dl', True)
         send_mqtt_request({"value": True}, "server/pi1/coveredPorch/dl")
         threading.Timer(10, send_mqtt_request, args=({"value": False}, "server/pi1/coveredPorch/dl")).start()
+        socketio.emit('dl', False)
 
 
 def dpir2_detect_movement(payload, msg):
