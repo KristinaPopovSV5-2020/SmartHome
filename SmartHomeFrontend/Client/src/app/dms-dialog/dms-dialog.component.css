@@ -1,0 +1,85 @@
+
+.modal-confirm .modal-footer {
+	border: none;
+	text-align: center;
+	border-radius: 5px;
+	font-size: 13px;
+    padding-top: 5px !important;
+}	
+
+.modal-body{
+    margin: 20px;
+    width: 350px;
+    height: fit-content;
+    text-align: center;
+    justify-content: center;
+}
+
+#confButton{
+    background-color: #80c5e6;
+    font-weight: bold;
+    margin: 10px auto;
+
+  }
+
+  mat-error{
+    color: blueviolet;
+    font-size: 13px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  p{
+    margin: 3px auto;
+  }
+
+  .remote-control {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button[data-color="#3498db"] {
+    background-color: #3498db; /* Boja za dugme sa color="#3498db" */
+  }
+
+  button[data-color="#FF0000"] {
+    background-color: rgb(252, 19, 19); /* Boja za dugme sa color="#3498db" */
+  }
+#cancButton{
+    background-color: transparent;
+    font-weight: bold;
+    margin: 15px auto;
+    width: 100px;
+  }
+
+  p{
+    color: blueviolet;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .rectangle {
+    height: 100px;
+    background-color: rgb(228, 239, 243);
+    border: 2px solid darkblue;
+    padding: 10px;
+    margin: 10px auto;
+  }
+  
+  
+  .rectangle p {
+    margin-left: 10px;
+    color: navy;
+    font-size: 30px;
+  }
+

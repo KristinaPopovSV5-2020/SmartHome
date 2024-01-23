@@ -1,0 +1,54 @@
+
+.modal-confirm .modal-footer {
+	border: none;
+	text-align: center;
+	border-radius: 5px;
+	font-size: 13px;
+    padding-top: 5px !important;
+}	
+
+.modal-body{
+    margin: 20px;
+    width: 350px;
+    height: fit-content;
+    text-align: center;
+    justify-content: center;
+}
+
+#confButton{
+    background-color: #80c5e6;
+    font-weight: bold;
+    margin: 10px auto;
+
+  }
+
+  mat-error{
+    color: blueviolet;
+    font-size: 13px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  p{
+    margin: 3px auto;
+  }
+
+#cancButton{
+    background-color: transparent;
+    font-weight: bold;
+    margin: 10px auto;
+    width: 100px;
+  }
+
+  p{
+    color: blueviolet;
+    text-align: center;
+    justify-content: center;
+  }
+
+.double-bottom{
+    display: inline;
+    margin: auto;
+    justify-content: center;
+    margin: 20px auto;
+  }

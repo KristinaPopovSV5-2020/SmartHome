@@ -5,14 +5,18 @@ import paho.mqtt.publish as publish
 import json
 import threading
 from flask_apscheduler import APScheduler
+from flask_socketio import SocketIO
 import time
 
 from flask import Flask, jsonify, request
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_query import simple_query, gyro_query
+
 
 app = Flask(__name__)
 scheduler = APScheduler()
+socketio = SocketIO(app)
 
 system_activated = False
 alarm = False
@@ -21,7 +25,7 @@ sent_alarm = False
 
 
 # InfluxDB Configuration
-token = "RAIp3pQkJ2XgrGiCBnm630gxcCtPvOUmjzoeZqC5lQSYJY8VYMUrFT9k3xkmB5QkvqYrrGUlE_DaEqqolA6Aew=="
+token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
 org = "ftn"
 url = "http://localhost:8086"
 bucket = "iot"
@@ -76,6 +80,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/foyer/ds1-2/duration")
     client.subscribe("home/dinette/rpir4")
     client.subscribe("home/dinette/rpir4/single")
+    client.subscribe("home/owners-suite/rdht4/temperature")
+    client.subscribe("home/owners-suite/rdht4/humidity")
 
 
 def on_message(client, userdata, msg):
@@ -103,8 +109,8 @@ def on_message(client, userdata, msg):
         "home/openRailing/r-pir2/single": rpir_detect_movement,
         "home/bedroom2/rdht1/temperature": database_save,
         "home/bedroom2/rdht1/humidity": database_save,
-        "home/bedroom2/rdht2/temperature": database_save,
-        "home/bedroom2/rdht2/humidity": database_save,
+        "home/bedroom3/rdht2/temperature": database_save,
+        "home/bedroom3/rdht2/humidity": database_save,
         "home/foyer/dms": database_save,
         "home/foyer/dms/single": dms_detect_password,
         "home/coveredPorch/d-us1": dus1_detect_movement,
@@ -117,7 +123,9 @@ def on_message(client, userdata, msg):
         "home/foyer/ds1-2": ds1_ds2_detect,
         "home/foyer/ds1-2/duration": ds1_ds2_duration,
         "home/dinette/rpir4": database_save,
-        "home/dinette/rpir4/single": rpir_detect_movement
+        "home/dinette/rpir4/single": rpir_detect_movement,
+        "home/owners-suite/rdht4/temperature": database_save,
+        "home/owners-suite/rdht4/humidity": database_save,
     }
 
     if topic in topic_method_mapping:
@@ -135,6 +143,7 @@ mqtt_client.loop_start()
 
 def database_save(payload, msg):
     print(payload)
+    socketio.emit('data', payload)
     save_to_db(json.loads(msg.decode('utf-8')))
 
 
@@ -378,19 +387,7 @@ def save_to_db(data):
     write_api.write(bucket=bucket, org=org, record=point)
 
 
-def handle_influx_query(query):
-    try:
-        query_api = influxdb_client.query_api()
-        tables = query_api.query(query, org=org)
 
-        container = []
-        for table in tables:
-            for record in table.records:
-                container.append(record.values)
-
-        return jsonify({"status": "success", "data": container})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
 
 
 # ENDPOINTS RELATED TO DEVICES
@@ -508,25 +505,70 @@ def store_data():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
+def handle_influx_query(query):
+    query_api = influxdb_client.query_api()
+    tables = query_api.query(query, org=org)
 
-@app.route('/simple_query', methods=['GET'])
-def retrieve_simple_data():
-    query = f"""from(bucket: "{bucket}")
-    |> range(start: -10m)
-    |> filter(fn: (r) => r._measurement == "Temperature")"""
-    return handle_influx_query(query)
+    selected_columns = []
+    for table in tables:
+        for record in table.records:
+            selected_columns = {
+                "_measurement": record.get_measurement(),
+                "_time": record.get_time(),
+                "_value": record.get_value(),
+                "name": record.values["name"],
+                "runs_on": record.values["runs_on"],
+                "simulated": record.values["simulated"]
+            }
 
+    return selected_columns
+
+
+def export_container_gyro(container):
+    unique_container = {"_measurement": "", "_time": "", "_value": [], "name": "", "runs_on": "", "simulated": ""}
+
+    if container:
+        first_record = container[0]
+        unique_container['_measurement'] = first_record['_measurement']
+        unique_container["_time"] = first_record["_time"]
+        unique_container['_value'].append(first_record['_value'])
+        unique_container['name'] = first_record['name']
+        unique_container['runs_on'] = first_record['runs_on']
+        unique_container['simulated'] = first_record['simulated']
+
+        for c in container[1:]:
+            unique_container['_value'].append(c['_value'])
+
+    return unique_container
 
 @app.route('/aggregate_query', methods=['GET'])
 def retrieve_aggregate_data():
-    query = f"""from(bucket: "{bucket}")
-    |> range(start: -10m)
-    |> filter(fn: (r) => r._measurement == "Temperature")
-    |> mean()"""
-    return handle_influx_query(query)
+    data = []
+    data_gyro = []
+    try:
+        measurement_name_pair = [("DS","DS1"),("DL","DL"),("DUS","DUS1"),("DB","DB"),("PIR","DPIR1"),("DMS","DMS"),
+                             ("PIR","RPIR1"),("PIR","RPIR2"),("Humidity","RDHT1"),("Humidity","RDHT2"),("Temperature","RDHT1"),
+                             ("Temperature", "RDHT2"), ("PIR","RPIR4"),("Humidity","RDHT4"),("Temperature","RDHT4"),("BB","BB"),("BIR","BIR"),("RGB","BRGB"),
+                                 ("DS","DS2"),("DUS","DUS2"),("PIR","DPIR2"),("Humidity","GDHT"),("Temperature","GDHT"),("PIR","RPIR3"),("Humidity","RDHT3"),("Temperature","RDHT3")
+                             ]
+        for (m,n) in measurement_name_pair:
+            query = simple_query(m,n)
+            selected = handle_influx_query(query)
+            data.append(selected)
+        g_queries = gyro_query()
+        for g_query in g_queries:
+            gyro_selected = handle_influx_query(g_query)
+            data_gyro.append(gyro_selected)
+            print(gyro_selected)
+        data.append(export_container_gyro(data_gyro))
+        return jsonify({"status": "success", "data": data})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
 
 
 if __name__ == '__main__':
     scheduler.init_app(app)
     scheduler.start()
-    app.run(debug=True, use_reloader=False)
+    socketio.run(app, debug=True, use_reloader=False, allow_unsafe_werkzeug=True)

@@ -70,7 +70,7 @@ def run_gyro(settings, threads, stop_event):
     if settings['simulated']:
         print("Starting " + settings["name"] + " simulator")
         gyro_thread = threading.Thread(target=run_gyro_simulator,
-                                       args=(2, gyro_callback, stop_event, publish_event, settings))
+                                       args=(7, gyro_callback, stop_event, publish_event, settings))
         gyro_thread.start()
         threads.append(gyro_thread)
         print(settings["name"] + " simulator started")

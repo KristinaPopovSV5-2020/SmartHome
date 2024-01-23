@@ -1,0 +1,182 @@
+
+.deviceBox {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.list-item {
+    background-color: #f8f9fa; /* Light background color */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px; /* Padding for content */
+    margin-bottom: 10px; /* Margin between list items */
+    display: flex; /* Use flexbox for layout */
+    align-items: center; /* Center content vertically */
+}
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px; /* Margin between title and picture */
+}
+
+
+.people-inside{
+  font-weight: bold;
+  font-size: 70px;
+  justify-content: center;
+  text-align: center;
+  color: navy;
+}
+
+body {
+    margin-top: 10%;
+    height: 150%;
+}
+.fixed-button {
+  background-color: #ff8e00 !important;
+  position: fixed;
+  width: 100px;
+  font-size: 18px;
+  border-radius: 14px;
+  font-weight: bold;
+  bottom: 20px; /* Adjust as needed for the desired vertical position */
+  right: 20px; /* Adjust as needed for the desired horizontal position */
+}
+
+.fixed-button1 {
+  background-color: #ff8e00 !important;
+  width: 100px;
+  position: fixed;
+  font-size: 18px;
+  border-radius: 14px;
+  font-weight: bold;
+  bottom: 80px; /* Adjust as needed for the desired vertical position */
+  right: 20px; /* Adjust as needed for the desired horizontal position */
+}
+
+.rectangle {
+  width: 180px;
+  height: 100px;
+  background-color: lightblue;
+  border: 2px solid darkblue;
+  padding: 10px;
+  margin: 0 auto;
+}
+
+.rectangle1 {
+  width: 180px;
+  height: 100px;
+  background-color: lightblue;
+  border: 2px solid darkblue;
+  padding: 10px;
+  margin: 0 auto;
+}
+
+
+.rectangle1 p {
+  margin-left: 10px;
+  color: navy;
+  font-size: 20px;
+}
+
+.rectangle p {
+  margin-left: 10px;
+  color: navy;
+  font-size: 60px;
+}
+
+.row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.col {
+  flex: 1;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 7px;
+  width: 95px;
+  text-align: center;
+  justify-content: center;
+}
+
+
+.fixed-button2 {
+  background-color: #ff8e00 !important;
+  width: 100px;
+  position: fixed;
+  font-size: 15px;
+  border-radius: 14px;
+  font-weight: bold;
+  bottom: 140px; /* Adjust as needed for the desired vertical position */
+  right: 20px; /* Adjust as needed for the desired horizontal position */
+}
+
+
+.mat-card {
+    width: 95px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+  
+  .content > mat-card {
+    width: 100px;
+  }
+.centeredDiv{
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}
+.space-between{
+    display: flex;
+    align-items: center;
+    margin: 0  auto;
+    width: 100%;
+   
+}
+
+span.material-icons{
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+span.material-symbols-outlined{
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h4{
+  margin-left: 5px;
+}
+.centerIcon{
+    padding: 4px;
+    margin-bottom: -9px;
+    width: 30px;
+    height: 30px;
+    margin-right: 7px;
+  }
+  
+h2{
+  display: flex;
+}
+
+.fixed-button {
+  background-color: #ff8e00 !important;
+  position: fixed;
+  font-size: 18px;
+  border-radius: 14px;
+  font-weight: bold;
+  bottom: 20px; /* Adjust as needed for the desired vertical position */
+  right: 20px; /* Adjust as needed for the desired horizontal position */
+}
