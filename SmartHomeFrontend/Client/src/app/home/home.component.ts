@@ -18,7 +18,7 @@ import { BirDialogComponent } from '../bir-dialog/bir-dialog.component';
 export class HomeComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,public dialog: MatDialog, private router:Router, private service: ServiceService, private socket: Socket){}
-  devices: any[] = []; 
+  devices: any[] = [];
 
   public rdht1T = 0;
   public rdht1H = 0;
@@ -42,6 +42,7 @@ export class HomeComponent implements OnInit {
 
   public tempLCD = 0;
   public humidityLCD = 0;
+  public peopleCount = 0;
 
   public soundOn = false;
 
@@ -86,7 +87,7 @@ export class HomeComponent implements OnInit {
             }else if (item.name === 'GDHT'){
               this.gdhtT = item._value;
             }
-            
+
           }
         }
         console.log(this.devices)
@@ -95,15 +96,27 @@ export class HomeComponent implements OnInit {
         if (error instanceof HttpErrorResponse){
           console.log(error.error[Object.keys(error.error)[0]]);
         }
-      }, 
+      },
     })
 
-    /*this.socket.fromEvent<string>('data')
+    this.socket.fromEvent<string>('glcd')
       .subscribe((message: any) => {
-        console.log(message)
-      
-      });*/
-   
+        if (message.measurement === 'Temperature') {
+          this.tempLCD = message.value;
+        } else if (message.measurement === 'Humidity') {
+          this.humidityLCD = message.value;
+        }
+      });
+
+    this.socket.fromEvent<string>('people')
+      .subscribe((message: any) => {
+        this.peopleCount = message;
+      });
+
+    this.socket.fromEvent<string>('alarm')
+      .subscribe((message: any) => {
+        this.soundOn = message == true;
+      });
   }
 
 
@@ -115,12 +128,12 @@ export class HomeComponent implements OnInit {
 
   openAlarmDialog():void{
     const dialogRef = this.dialog.open(AlarmDialogComponent);
-    
+
   }
 
   openBIRDialog():void{
     const dialogRef = this.dialog.open(BirDialogComponent);
-    
+
   }
 
 

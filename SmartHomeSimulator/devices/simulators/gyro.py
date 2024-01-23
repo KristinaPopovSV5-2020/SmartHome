@@ -6,8 +6,8 @@ def generate_accel_gyro():
     accel = [0, 0, 0]
     gyro = [0, 0, 0]
     while True:
-        accel = [min(2, max(-2, a + random.uniform(-0.05, 0.05))) for a in accel]
-        gyro = [min(250, max(-250, g + random.uniform(-5, 5))) for g in gyro]
+        accel = [min(2, max(-2, a + random.uniform(-0.051, 0.051))) for a in accel]
+        gyro = [min(250, max(-250, g + random.uniform(-5.1, 5.1))) for g in gyro]
         yield accel, gyro
 
 

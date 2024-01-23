@@ -17,7 +17,7 @@
           </div>
           <div class="col">
             <h3 style="font-weight: bold;">People inside:</h3>
-            <p class="people-inside">4</p>
+            <p class="people-inside">{{peopleCount}}</p>
           </div>
           <div class="col">
             <h3 style="font-weight: bold;">LCD:</h3>
@@ -34,8 +34,8 @@
                 </ng-container>
                 <ng-template #nonZeroValue>
                     <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_off</mat-icon>
-                </ng-template>  
-            </div>  
+                </ng-template>
+            </div>
           </div>
         </div>
       </div>
@@ -52,11 +52,11 @@
                     </div>
                     </mat-card-header>
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
-                        <h2><mat-icon class="centerIcon">touch_app</mat-icon> {{device._value}}</h2>  
+                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
+                        <h2><mat-icon class="centerIcon">touch_app</mat-icon> {{device._value}}</h2>
                     </mat-card-content>
-                
+
                 </div>
                 <div *ngSwitchCase="'DL'">
                     <mat-card-header>
@@ -66,16 +66,16 @@
                     </div>
                     </mat-card-header>
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
+                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
                         <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> <ng-container *ngIf="device._value === 0; else nonZeroValue">
                             {{ 'Light off' }}
                         </ng-container>
                         <ng-template #nonZeroValue>
                             {{ 'Light on'}}
-                        </ng-template>   </h2>   
+                        </ng-template>   </h2>
                     </mat-card-content>
-                
+
                 </div>
 
                 <div *ngSwitchCase="'DUS'">
@@ -86,29 +86,27 @@
                     </div>
                     </mat-card-header>
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
-                        <h2><mat-icon class="centerIcon">directions_walk</mat-icon> {{device._value}} cm</h2>    
+                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
+                        <h2><mat-icon class="centerIcon">directions_walk</mat-icon> {{device._value}} cm</h2>
                     </mat-card-content>
-                
+
                 </div>
-                <div *ngSwitchCase="'Gyro'">
-                    <mat-card-header>
-                        <div class="space-between">
-                        <mat-card-title>{{device.name}}</mat-card-title>
-                        <hr/>
-                    </div>
-                    </mat-card-header>
-                    <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
-                        <div *ngFor="let v of device._value">
-                            <h4 style="margin-top: -15px;">{{v.toFixed(2)}}</h4>
-                        </div>
-                       
-                    </mat-card-content>
-                
-                </div>
+              <div *ngSwitchCase="'Gyro'">
+                <mat-card-header>
+                  <div class="space-between">
+                    <mat-card-title>{{device.name}}</mat-card-title>
+                    <hr/>
+                  </div>
+                </mat-card-header>
+                <mat-card-content style="height: 245px; margin-top: 20px;">
+                  <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                  <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
+                  <div *ngFor="let v of device._value; let i = index">
+                    <h4 style="margin-top: -15px;"><strong>{{v.toFixed(2)}}</strong> <span *ngIf="i < 3">g</span><span *ngIf="i >= 3">°/s</span></h4>
+                  </div>
+                </mat-card-content>
+              </div>
                 <div *ngSwitchCase="'PIR'">
                     <mat-card-header>
                         <div class="space-between">
@@ -117,11 +115,11 @@
                     </div>
                     </mat-card-header>
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
-                        <h2><mat-icon class="centerIcon">directions_walk</mat-icon> {{device._value}} </h2>    
+                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
+                        <h2><mat-icon class="centerIcon">directions_walk</mat-icon> {{device._value}} </h2>
                     </mat-card-content>
-                
+
                 </div>
 
                 <div *ngSwitchCase="'BB'">
@@ -132,16 +130,16 @@
                     </div>
                     </mat-card-header>
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
+                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
                         <h2><mat-icon class="centerIcon">volume_up</mat-icon><ng-container *ngIf="device._value === 0; else nonZeroValue">
                             {{ ' Sound off' }}
                         </ng-container>
                         <ng-template #nonZeroValue>
                             {{ ' Sound on'}}
-                        </ng-template>    </h2>    
+                        </ng-template>    </h2>
                     </mat-card-content>
-                
+
                 </div>
 
                 <div *ngSwitchCase="'DB'">
@@ -152,16 +150,16 @@
                     </div>
                     </mat-card-header>
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
+                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
                         <h2><mat-icon class="centerIcon">volume_up</mat-icon><ng-container *ngIf="device._value === 0; else nonZeroValue">
                             {{ ' Sound off' }}
                         </ng-container>
                         <ng-template #nonZeroValue>
                             {{ ' Sound on'}}
-                        </ng-template>    </h2>    
+                        </ng-template>    </h2>
                     </mat-card-content>
-                
+
                 </div>
                 <div *ngSwitchCase="'BIR'">
                     <mat-card-header>
@@ -171,11 +169,11 @@
                     </div>
                     </mat-card-header>
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
-                        <h2><mat-icon class="centerIcon">keyboard</mat-icon> {{device._value}}</h2>        
+                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
+                        <h2><mat-icon class="centerIcon">keyboard</mat-icon> {{device._value}}</h2>
                     </mat-card-content>
-                
+
                 </div>
                 <div *ngSwitchCase="'DMS'">
                     <mat-card-header>
@@ -185,11 +183,11 @@
                     </div>
                     </mat-card-header>
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
-                        <h2><mat-icon class="centerIcon">keyboard</mat-icon> {{device._value}}</h2>            
+                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
+                        <h2><mat-icon class="centerIcon">keyboard</mat-icon> {{device._value}}</h2>
                     </mat-card-content>
-                
+
                 </div>
                 <div *ngSwitchCase="'RGB'">
                     <mat-card-header>
@@ -199,17 +197,17 @@
                     </div>
                     </mat-card-header>
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>   
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>  
-                        <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{device._value}}</h2>                
-                    </mat-card-content>   
+                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
+                        <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{device._value}}</h2>
+                    </mat-card-content>
                 </div>
-        
+
         </mat-card>
-            
-    
+
+
         </div>
-      
+
     </div>
     <div fxFlex="25%">
         <mat-card class="mat-elevation-z4">
@@ -219,15 +217,15 @@
                   <hr/>
               </div>
               </mat-card-header>
-              <mat-card-content  style="height: 150px;margin-top: 20px;">
-                  <h4 style="margin-top: -15px;">Runs on: PI1</h4>   
-                  <h4 style="margin-top: -15px;">Simulated: {{rdht1S}}</h4>  
+              <mat-card-content  style="height: 230px;margin-top: 20px;">
+                  <h4 style="margin-top: -15px;">Runs on: PI1</h4>
+                  <h4 style="margin-top: -15px;">Simulated: {{rdht1S}}</h4>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht1T}} °C</h2>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht1H}} %</h2>
-                    
+
               </mat-card-content>
         </mat-card>
-    </div> 
+    </div>
     <div fxFlex="25%">
         <mat-card class="mat-elevation-z4">
             <mat-card-header>
@@ -236,15 +234,15 @@
                   <hr/>
               </div>
               </mat-card-header>
-              <mat-card-content  style="height: 150px;margin-top: 20px;">
-                  <h4 style="margin-top: -15px;">Runs on: PI1</h4>   
-                  <h4 style="margin-top: -15px;">Simulated: {{rdht2S}}</h4>  
+              <mat-card-content  style="height: 230px;margin-top: 20px;">
+                  <h4 style="margin-top: -15px;">Runs on: PI1</h4>
+                  <h4 style="margin-top: -15px;">Simulated: {{rdht2S}}</h4>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht2T}} °C</h2>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht2H}} %</h2>
-                    
+
               </mat-card-content>
         </mat-card>
-    </div> 
+    </div>
     <div fxFlex="25%">
         <mat-card class="mat-elevation-z4">
             <mat-card-header>
@@ -253,15 +251,15 @@
                   <hr/>
               </div>
               </mat-card-header>
-              <mat-card-content  style="height: 150px;margin-top: 20px;">
-                  <h4 style="margin-top: -15px;">Runs on: PI2</h4>   
-                  <h4 style="margin-top: -15px;">Simulated: {{rdht3S}}</h4>  
+              <mat-card-content  style="height: 230px;margin-top: 20px;">
+                  <h4 style="margin-top: -15px;">Runs on: PI2</h4>
+                  <h4 style="margin-top: -15px;">Simulated: {{rdht3S}}</h4>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht3T}} °C</h2>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht3H}} %</h2>
-                    
+
               </mat-card-content>
         </mat-card>
-    </div> 
+    </div>
     <div fxFlex="25%">
         <mat-card class="mat-elevation-z4">
             <mat-card-header>
@@ -271,14 +269,14 @@
               </div>
               </mat-card-header>
               <mat-card-content  style="height: 150px;margin-top: 20px;">
-                  <h4 style="margin-top: -15px;">Runs on: PI3</h4>   
-                  <h4 style="margin-top: -15px;">Simulated: {{rdht4S}}</h4>  
+                  <h4 style="margin-top: -15px;">Runs on: PI3</h4>
+                  <h4 style="margin-top: -15px;">Simulated: {{rdht4S}}</h4>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht4T}} °C</h2>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht4H}} %</h2>
-                    
+
               </mat-card-content>
         </mat-card>
-    </div> 
+    </div>
     <div fxFlex="25%">
         <mat-card class="mat-elevation-z4">
             <mat-card-header>
@@ -288,16 +286,16 @@
               </div>
               </mat-card-header>
               <mat-card-content  style="height: 150px;margin-top: 20px;">
-                  <h4 style="margin-top: -15px;">Runs on: PI2</h4>   
-                  <h4 style="margin-top: -15px;">Simulated: {{gdhtS}}</h4>  
+                  <h4 style="margin-top: -15px;">Runs on: PI2</h4>
+                  <h4 style="margin-top: -15px;">Simulated: {{gdhtS}}</h4>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{gdhtT}} °C</h2>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{gdhtH}} %</h2>
-                    
+
               </mat-card-content>
         </mat-card>
-    </div> 
+    </div>
   </div>
-  </div> 
+  </div>
   <button mat-raised-button class="fixed-button" (click)="openDMSDialog()">DMS</button>
   <button mat-raised-button class="fixed-button1" (click)="openBIRDialog()">BIR</button>
   <button mat-raised-button class="fixed-button2" (click)="openAlarmDialog()"><mat-icon >alarm</mat-icon>Alarm</button>
