@@ -40,16 +40,64 @@ export class HomeComponent implements OnInit {
   public gdhtH = 0;
   public gdhtS = false;
 
-  public tempLCD = 0;
-  public humidityLCD = 0;
+  public tempLCD = 15;
+  public humidityLCD = 12;
 
   public soundOn = false;
+  public b4sd = "00:00"
+
+  public colorRGB  = "white";
+  public turnOffrgb = ""
+
+
+  isButtonEnableCancelAlarm: boolean = true;
+
 
 
 
 
 
   ngOnInit(): void {
+    this.refresh();
+    
+
+    this.socket.fromEvent<string>('brgb')
+      .subscribe((message: any) => {
+        console.log(message)
+        if (message.value === 'light_blue'){
+          this.colorRGB = "rgb(94, 166, 233)"
+          this.turnOffrgb = 'Turn on'
+        }else if (message.value === 'turnOff'){
+          this.colorRGB = 'white'
+          this.turnOffrgb = 'Turn off'
+        }else{
+          this.colorRGB =message.value
+          this.turnOffrgb = 'Turn on'
+        }
+         
+      });
+   
+  }
+
+
+
+  openDMSDialog():void{
+    const dialogRef = this.dialog.open(DmsDialogComponent);
+
+  }
+
+  openAlarmDialog():void{
+    const dialogRef = this.dialog.open(AlarmDialogComponent);
+    
+  }
+
+  openBIRDialog():void{
+    const dialogRef = this.dialog.open(BirDialogComponent);
+    
+  }
+
+
+  refresh(): void{
     this.service.getDevices().subscribe({
       next: (response) =>{
         for (let item of response.data){
@@ -98,29 +146,39 @@ export class HomeComponent implements OnInit {
       }, 
     })
 
-    /*this.socket.fromEvent<string>('data')
-      .subscribe((message: any) => {
-        console.log(message)
-      
-      });*/
-   
+  }
+
+  displayCurrentTime():void{
+    this.service.b4sdChangeDevice().subscribe({next:
+      (response)=>{
+        if (response.intermittently){
+
+        }else{
+          const now = new Date();
+          const hours = this.padZero(now.getHours());
+          const minutes = this.padZero(now.getMinutes());
+          this.b4sd =  `${hours}:${minutes}`
+        }
+      }, error: (error)=> {
+        console.error(error)
+      }})
+
+
+  }
+
+  private padZero(value: number): string {
+    return value < 10 ? `0${value}` : `${value}`;
   }
 
 
+  stopAlarm(): void{
+    this.service.cancelAlarm().subscribe({next:
+      (response)=>{
+        this.isButtonEnableCancelAlarm = false
+      }, error: (error)=> {
+        console.error(error)
+      }})
 
-  openDMSDialog():void{
-    const dialogRef = this.dialog.open(DmsDialogComponent);
-
-  }
-
-  openAlarmDialog():void{
-    const dialogRef = this.dialog.open(AlarmDialogComponent);
-    
-  }
-
-  openBIRDialog():void{
-    const dialogRef = this.dialog.open(BirDialogComponent);
-    
   }
 
 

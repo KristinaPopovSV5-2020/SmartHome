@@ -11,9 +11,9 @@
           <div class="col">
             <p style="font-weight: bold;">B4SD</p>
             <div class="rectangle">
-                <p>22:00</p>
+                <p>{{b4sd}}</p>
             </div>
-            <button  mat-button>Display current time</button>
+            <button  mat-button (click)="displayCurrentTime()">Display current time</button>
           </div>
           <div class="col">
             <h3 style="font-weight: bold;">People inside:</h3>
@@ -25,6 +25,10 @@
                 <p>Temperature: {{tempLCD}}</p>
                 <p>Humidity: {{humidityLCD}}</p>
             </div>
+          </div>
+          <div class="col">
+            <h3 style="font-weight: bold;">BRGB: {{turnOffrgb}}</h3>
+            <div [style.backgroundColor]="colorRGB" class="circle"></div>
           </div>
           <div class="col">
             <h3 style="font-weight: bold;">Alarm: {{soundOn}}</h3>
@@ -301,4 +305,7 @@
   <button mat-raised-button class="fixed-button" (click)="openDMSDialog()">DMS</button>
   <button mat-raised-button class="fixed-button1" (click)="openBIRDialog()">BIR</button>
   <button mat-raised-button class="fixed-button2" (click)="openAlarmDialog()"><mat-icon >alarm</mat-icon>Alarm</button>
+  <button mat-button class="fixed-button3" *ngIf="isButtonEnableCancelAlarm" (click)="stopAlarm()"><mat-icon >stop</mat-icon></button>
+
+ 
 </body>

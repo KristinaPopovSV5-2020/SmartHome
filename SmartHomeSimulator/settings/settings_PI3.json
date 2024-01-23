@@ -44,6 +44,7 @@
       "simulated": true,
       "runs_on": "PI3",
       "topic": "home/owners-suite/brgb",
+      "topic_single": "home/owners-suite/brgb/single",
       "RED_PIN": 12,
       "GREEN_PIN": 13,
       "BLUE_PIN": 19

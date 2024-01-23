@@ -38,6 +38,12 @@ export class DmsDialogComponent {
 
   onButtonClick(button: any): void {
     if (button.label ==='#'){
+      this.service.dmsChangeDevice(this.password).subscribe({next:
+        (response)=>{
+          this.dialogRef.close(); 
+        }, error: (error)=> {
+          console.error(error)
+        }})
 
     }else{
       this.password += button.label

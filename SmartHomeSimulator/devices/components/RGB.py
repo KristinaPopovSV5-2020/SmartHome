@@ -53,6 +53,8 @@ def rgb_callback(color, publish_event, rgb_settings, verbose=True):
     if publish_data_counter >= publish_data_limit:
         publish_event.set()
 
+    publish.single(topic=rgb_settings['topic_single'], payload=json.dumps(payload), hostname=HOSTNAME, port=PORT)
+
 
 def handle_brgb_message(payload, settings):
     global rgb_thread

@@ -32,8 +32,14 @@ export class AlarmDialogComponent implements OnInit{
 
   submit(): void{
     if (this.alarmForm.valid){
-      //endpoint
-      this.dialogRef.close();
+      let time = this.alarmForm.value.time.replace(/:/g, ',');
+      console.log(time)
+      this.service.setAlarm(time).subscribe({next:
+        (response)=>{
+          this.dialogRef.close(); 
+        }, error: (error)=> {
+          console.error(error)
+        }})
     }
 
   }
