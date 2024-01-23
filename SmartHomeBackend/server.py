@@ -75,6 +75,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/owners-suite/bir/rgb")
     client.subscribe("home/owners-suite/bir")
     client.subscribe("home/owners-suite/brgb")
+    client.subscribe("home/owners-suite/brgb/single")
     client.subscribe("home/owners-suite/bb")
     client.subscribe("home/foyer/ds1-2")
     client.subscribe("home/foyer/ds1-2/duration")
@@ -82,6 +83,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("home/dinette/rpir4/single")
     client.subscribe("home/owners-suite/rdht4/temperature")
     client.subscribe("home/owners-suite/rdht4/humidity")
+    client.subscribe("home/owners-suite/b4sd")
 
 
 def on_message(client, userdata, msg):
@@ -126,6 +128,8 @@ def on_message(client, userdata, msg):
         "home/dinette/rpir4/single": rpir_detect_movement,
         "home/owners-suite/rdht4/temperature": database_save,
         "home/owners-suite/rdht4/humidity": database_save,
+        "home/owners-suite/brgb/single": detect_change_color_rgb,
+        "home/owners-suite/b4sd": display_current_time,
     }
 
     if topic in topic_method_mapping:
@@ -144,6 +148,9 @@ mqtt_client.loop_start()
 def database_save(payload, msg):
     print(payload)
     save_to_db(json.loads(msg.decode('utf-8')))
+
+def display_current_time(payload, msg):
+    socketio.emit('b4sd', payload)
 
 
 def ds1_ds2_detect(payload, msg):
@@ -168,6 +175,8 @@ def ds1_ds2_detect(payload, msg):
             send_mqtt_request({'value': False}, "server/pi1/foyer/db")
 
 
+def detect_change_color_rgb(payload, msg):
+    socketio.emit('brgb', payload)
 
 def ds1_ds2_duration(payload, msg):
     global alarm, sent_alarm
@@ -192,6 +201,7 @@ def send_mqtt_request(payload, mqtt_topic):
 
 def dms_detect_password(payload, msg):
     global alarm, system_activated, sent_alarm
+    print(payload)
     if payload['value'].split("-")[1] == "True":
         alarm = False
         system_activated = False

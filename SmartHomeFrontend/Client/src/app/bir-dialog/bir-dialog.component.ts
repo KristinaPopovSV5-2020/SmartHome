@@ -32,6 +32,13 @@ export class BirDialogComponent {
 
   onButtonClick(button: any): void {
     this.code = button.label
+    this.service.birChangeDevice(this.code).subscribe({next:
+      (response)=>{
+        this.dialogRef.close(); 
+      }, error: (error)=> {
+        console.error(error)
+      }})
+
   }
 
 
