@@ -357,8 +357,8 @@ def gyro_database_save(payload, msg):
 
     # Compare with previous data
     if previous_gyro_data is not None:
-        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['accel_x', 'accel_y', 'accel_z'], 0.2)
-        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['gyro_x', 'gyro_y', 'gyro_z'], 20)
+        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['accel_x', 'accel_y', 'accel_z'], 0.05)
+        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['gyro_x', 'gyro_y', 'gyro_z'], 5)
 
     # Update previous data
     previous_gyro_data = payload

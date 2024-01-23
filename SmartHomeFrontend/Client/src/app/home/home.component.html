@@ -92,23 +92,21 @@
                     </mat-card-content>
 
                 </div>
-                <div *ngSwitchCase="'Gyro'">
-                    <mat-card-header>
-                        <div class="space-between">
-                        <mat-card-title>{{device.name}}</mat-card-title>
-                        <hr/>
-                    </div>
-                    </mat-card-header>
-                    <mat-card-content  style="height: 150px;margin-top: 20px;">
-                        <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
-                        <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
-                        <div *ngFor="let v of device._value">
-                            <h4 style="margin-top: -15px;">{{v.toFixed(2)}}</h4>
-                        </div>
-
-                    </mat-card-content>
-
-                </div>
+              <div *ngSwitchCase="'Gyro'">
+                <mat-card-header>
+                  <div class="space-between">
+                    <mat-card-title>{{device.name}}</mat-card-title>
+                    <hr/>
+                  </div>
+                </mat-card-header>
+                <mat-card-content style="height: 245px; margin-top: 20px;">
+                  <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
+                  <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
+                  <div *ngFor="let v of device._value; let i = index">
+                    <h4 style="margin-top: -15px;"><strong>{{v.toFixed(2)}}</strong> <span *ngIf="i < 3">g</span><span *ngIf="i >= 3">°/s</span></h4>
+                  </div>
+                </mat-card-content>
+              </div>
                 <div *ngSwitchCase="'PIR'">
                     <mat-card-header>
                         <div class="space-between">
@@ -219,7 +217,7 @@
                   <hr/>
               </div>
               </mat-card-header>
-              <mat-card-content  style="height: 150px;margin-top: 20px;">
+              <mat-card-content  style="height: 230px;margin-top: 20px;">
                   <h4 style="margin-top: -15px;">Runs on: PI1</h4>
                   <h4 style="margin-top: -15px;">Simulated: {{rdht1S}}</h4>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht1T}} °C</h2>
@@ -236,7 +234,7 @@
                   <hr/>
               </div>
               </mat-card-header>
-              <mat-card-content  style="height: 150px;margin-top: 20px;">
+              <mat-card-content  style="height: 230px;margin-top: 20px;">
                   <h4 style="margin-top: -15px;">Runs on: PI1</h4>
                   <h4 style="margin-top: -15px;">Simulated: {{rdht2S}}</h4>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht2T}} °C</h2>
@@ -253,7 +251,7 @@
                   <hr/>
               </div>
               </mat-card-header>
-              <mat-card-content  style="height: 150px;margin-top: 20px;">
+              <mat-card-content  style="height: 230px;margin-top: 20px;">
                   <h4 style="margin-top: -15px;">Runs on: PI2</h4>
                   <h4 style="margin-top: -15px;">Simulated: {{rdht3S}}</h4>
                   <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> {{rdht3T}} °C</h2>
