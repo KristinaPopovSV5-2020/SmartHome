@@ -3,6 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceService } from '../service.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Socket } from 'ngx-socket-io';
+import { AlarmDialogComponent } from '../alarm-dialog/alarm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DmsDialogComponent } from '../dms-dialog/dms-dialog.component';
+import { BirDialogComponent } from '../bir-dialog/bir-dialog.component';
 
 
 
@@ -13,7 +17,7 @@ import { Socket } from 'ngx-socket-io';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private router:Router, private service: ServiceService, private socket: Socket){}
+  constructor(private route: ActivatedRoute,public dialog: MatDialog, private router:Router, private service: ServiceService, private socket: Socket){}
   devices: any[] = []; 
 
   public rdht1T = 0;
@@ -35,6 +39,12 @@ export class HomeComponent implements OnInit {
   public gdhtT = 0;
   public gdhtH = 0;
   public gdhtS = false;
+
+  public tempLCD = 0;
+  public humidityLCD = 0;
+
+  public soundOn = false;
+
 
 
 
@@ -99,14 +109,17 @@ export class HomeComponent implements OnInit {
 
 
   openDMSDialog():void{
+    const dialogRef = this.dialog.open(DmsDialogComponent);
 
   }
 
   openAlarmDialog():void{
+    const dialogRef = this.dialog.open(AlarmDialogComponent);
     
   }
 
   openBIRDialog():void{
+    const dialogRef = this.dialog.open(BirDialogComponent);
     
   }
 

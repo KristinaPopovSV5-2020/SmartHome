@@ -12,6 +12,9 @@ import { SharedModule } from './shared/shared.module';
 import { HttpClientModule } from '@angular/common/http';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { AlarmDialogComponent } from './alarm-dialog/alarm-dialog.component';
+import { DmsDialogComponent } from './dms-dialog/dms-dialog.component';
+import { BirDialogComponent } from './bir-dialog/bir-dialog.component';
 
 const config: SocketIoConfig = { url: 'http://127.0.0.1:5000', options: {} };
 
@@ -21,6 +24,9 @@ const config: SocketIoConfig = { url: 'http://127.0.0.1:5000', options: {} };
     ToolbarComponent,
     HistoryComponent,
     HomeComponent,
+    AlarmDialogComponent,
+    DmsDialogComponent,
+    BirDialogComponent
   ],
   imports: [
     BrowserModule,

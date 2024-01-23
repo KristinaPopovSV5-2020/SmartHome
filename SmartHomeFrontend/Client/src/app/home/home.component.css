@@ -25,10 +25,9 @@
 
 .people-inside{
   font-weight: bold;
-  font-size: 80px;
+  font-size: 70px;
   justify-content: center;
   text-align: center;
-  margin-top: 60px;
   color: navy;
 }
 
@@ -64,10 +63,26 @@ body {
   background-color: lightblue;
   border: 2px solid darkblue;
   padding: 10px;
+  margin: 0 auto;
+}
+
+.rectangle1 {
+  width: 180px;
+  height: 100px;
+  background-color: lightblue;
+  border: 2px solid darkblue;
+  padding: 10px;
+  margin: 0 auto;
+}
+
+
+.rectangle1 p {
+  margin-left: 10px;
+  color: navy;
+  font-size: 20px;
 }
 
 .rectangle p {
-  margin: 35px auto;
   margin-left: 10px;
   color: navy;
   font-size: 60px;
@@ -75,13 +90,17 @@ body {
 
 .row {
   display: flex;
+  margin-bottom: 10px;
 }
 
 .col {
   flex: 1;
   border: 1px solid #ddd;
   padding: 10px;
-  margin: 5px;
+  margin: 7px;
+  width: 95px;
+  text-align: center;
+  justify-content: center;
 }
 
 
@@ -98,7 +117,7 @@ body {
 
 
 .mat-card {
-    width: 100px;
+    width: 95px;
   }
 
   .content {
@@ -143,6 +162,9 @@ h4{
 .centerIcon{
     padding: 4px;
     margin-bottom: -9px;
+    width: 30px;
+    height: 30px;
+    margin-right: 7px;
   }
   
 h2{
