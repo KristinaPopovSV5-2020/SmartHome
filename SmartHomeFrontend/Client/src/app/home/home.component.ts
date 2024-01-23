@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceService } from '../service.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Socket } from 'ngx-socket-io';
+
+
 
 @Component({
   selector: 'app-home',
@@ -10,7 +13,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private router:Router, private service: ServiceService){}
+  constructor(private route: ActivatedRoute, private router:Router, private service: ServiceService, private socket: Socket){}
   devices: any[] = []; 
 
   public rdht1T = 0;
@@ -84,6 +87,13 @@ export class HomeComponent implements OnInit {
         }
       }, 
     })
+
+    this.socket.fromEvent<string>('data')
+      .subscribe((message: any) => {
+        console.log(message)
+      
+      });
+   
   }
 
 }

@@ -106,7 +106,7 @@ def run_dht(settings, threads, stop_event):
     if settings['simulated']:
         print("Starting " + settings["name"] + " simulator")
         dht1_thread = threading.Thread(target=run_dht_simulator,
-                                       args=(2, dht_callback_sim, stop_event, publish_event, settings))
+                                       args=(11, dht_callback_sim, stop_event, publish_event, settings))
         dht1_thread.start()
         threads.append(dht1_thread)
         print(settings["name"] + " sumilator started")

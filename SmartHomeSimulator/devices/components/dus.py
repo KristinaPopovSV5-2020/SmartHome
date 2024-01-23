@@ -58,7 +58,7 @@ def dus_callback_sim(distance, publish_event, dht_settings, verbose=True):
 def run_dus(settings, threads, stop_event):
     if settings['simulated']:
         print("Starting " + settings["name"] + " simulator")
-        dus1_thread = threading.Thread(target=run_dus_simulator, args=(2, dus_callback_sim, stop_event, publish_event, settings))
+        dus1_thread = threading.Thread(target=run_dus_simulator, args=(9, dus_callback_sim, stop_event, publish_event, settings))
         dus1_thread.start()
         threads.append(dus1_thread)
         print(settings["name"] + " simulator started")

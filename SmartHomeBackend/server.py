@@ -5,6 +5,7 @@ import paho.mqtt.publish as publish
 import json
 import threading
 from flask_apscheduler import APScheduler
+from flask_socketio import SocketIO
 import time
 
 from flask import Flask, jsonify, request
@@ -12,8 +13,10 @@ from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_query import simple_query, gyro_query
 
+
 app = Flask(__name__)
 scheduler = APScheduler()
+socketio = SocketIO(app)
 
 system_activated = False
 alarm = False
@@ -140,6 +143,7 @@ mqtt_client.loop_start()
 
 def database_save(payload, msg):
     print(payload)
+    socketio.emit('data', payload)
     save_to_db(json.loads(msg.decode('utf-8')))
 
 
@@ -567,4 +571,4 @@ def retrieve_aggregate_data():
 if __name__ == '__main__':
     scheduler.init_app(app)
     scheduler.start()
-    app.run(debug=True, use_reloader=False)
+    socketio.run(app, debug=True, use_reloader=False, allow_unsafe_werkzeug=True)
