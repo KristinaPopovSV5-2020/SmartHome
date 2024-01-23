@@ -25,7 +25,7 @@ sent_alarm = False
 
 
 # InfluxDB Configuration
-token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
+token = "RAIp3pQkJ2XgrGiCBnm630gxcCtPvOUmjzoeZqC5lQSYJY8VYMUrFT9k3xkmB5QkvqYrrGUlE_DaEqqolA6Aew=="
 org = "ftn"
 url = "http://localhost:8086"
 bucket = "iot"
@@ -92,7 +92,7 @@ def on_message(client, userdata, msg):
 
     topic_method_mapping = {
         "home/coveredPorch/dl": database_save,
-        "home/coveredPorch/d-pir1": dpir1_save_to_db,
+        "home/coveredPorch/d-pir1": database_save,
         "home/coveredPorch/d-pir1/single": dpir1_detect_movement,
         "home/foyer/r-pir1": database_save,
         "home/foyer/r-pir1/single": rpir_detect_movement,
@@ -147,14 +147,10 @@ mqtt_client.loop_start()
 
 def database_save(payload, msg):
     print(payload)
-    socketio.emit('data', payload)
     save_to_db(json.loads(msg.decode('utf-8')))
 
 def display_current_time(payload, msg):
     socketio.emit('b4sd', payload)
-
-def dpir1_save_to_db(payload, msg):
-    save_to_db(json.loads(msg.decode('utf-8')))
 
 
 def ds1_ds2_detect(payload, msg):
@@ -164,6 +160,7 @@ def ds1_ds2_detect(payload, msg):
         if system_activated and alarm and not sent_alarm:
             sent_alarm = True
             print("BUZZZZ")
+            socketio.emit('alarm', True)
             send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
             time.sleep(0.5)
             send_mqtt_request({'value': True}, "server/pi1/foyer/db")
@@ -172,6 +169,7 @@ def ds1_ds2_detect(payload, msg):
             alarm = False
             sent_alarm = False
             print("Sound off")
+            socketio.emit('alarm', False)
             send_mqtt_request({'value': False}, "server/pi3/owners-suite/bb")
             time.sleep(0.5)
             send_mqtt_request({'value': False}, "server/pi1/foyer/db")
@@ -186,6 +184,7 @@ def ds1_ds2_duration(payload, msg):
         sent_alarm = True
         alarm = True
         print("BUZZZZ")
+        socketio.emit('alarm', True)
         send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
         time.sleep(0.5)
         send_mqtt_request({'value': True}, "server/pi1/foyer/db")
@@ -209,6 +208,7 @@ def dms_detect_password(payload, msg):
         sent_alarm = False
         print("Sound off")
         print("System deactivated")
+        socketio.emit('alarm', False)
         send_mqtt_request({'value': False}, "server/pi3/owners-suite/bb")
         time.sleep(0.5)
         send_mqtt_request({'value': False}, "server/pi1/foyer/db")
@@ -241,6 +241,7 @@ def rpir_detect_movement(payload, msg):
         if not sent_alarm:
             sent_alarm = True
             print("BUZZZZ")
+            socketio.emit('alarm', True)
             send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
             time.sleep(0.5)
             send_mqtt_request({'value': True}, "server/pi1/foyer/db")
@@ -249,25 +250,29 @@ def rpir_detect_movement(payload, msg):
 def update_people_inside_dus1():
     global people_inside, last_dus1_value, new_dus1_value, alarm, sent_alarm
     with people_inside_lock:
-        if new_dus1_value < last_dus1_value:
+        if last_dus1_value and new_dus1_value < last_dus1_value:
             people_inside += 1
-        elif new_dus1_value > last_dus1_value:
+        elif last_dus1_value and new_dus1_value > last_dus1_value:
             people_inside -= 1
         if people_inside < 0:
             people_inside = 0
     print("PEOPLE INSIDE: ", people_inside)
+    socketio.emit('people', people_inside)
+
+
 
 
 def update_people_inside_dus2():
     global people_inside, last_dus2_value, new_dus2_value, alarm, sent_alarm
     with people_inside_lock:
-        if new_dus2_value < last_dus2_value:
+        if last_dus2_value and new_dus2_value < last_dus2_value:
             people_inside += 1
-        elif new_dus2_value > last_dus2_value:
+        elif last_dus2_value and new_dus2_value > last_dus2_value:
             people_inside -= 1
         if people_inside < 0:
             people_inside = 0
     print("PEOPLE INSIDE: ", people_inside)
+    socketio.emit('glcd', people_inside)
 
 
 def dus1_detect_movement(payload, msg):
@@ -291,6 +296,7 @@ def handle_gdht_message(payload, msg):
         send_mqtt_request({"temperature": payload["value"]}, "server/pi2/garage/glcd")
     elif payload["measurement"] == "Humidity":
         send_mqtt_request({"humidity": payload["value"]}, "server/pi2/garage/glcd")
+    socketio.emit('glcd', payload)
     database_save(payload, msg)
 
 
@@ -349,6 +355,7 @@ def check_and_trigger_alarm_gyro(payload, previous_data, keys, threshold):
             if not sent_alarm:
                 sent_alarm = True
                 print("BUZZZZ")
+                socketio.emit('alarm', True)
                 send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
                 time.sleep(0.5)
                 send_mqtt_request({'value': True}, "server/pi1/foyer/db")
@@ -360,8 +367,8 @@ def gyro_database_save(payload, msg):
 
     # Compare with previous data
     if previous_gyro_data is not None:
-        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['accel_x', 'accel_y', 'accel_z'], 0.2)
-        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['gyro_x', 'gyro_y', 'gyro_z'], 20)
+        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['accel_x', 'accel_y', 'accel_z'], 0.05)
+        check_and_trigger_alarm_gyro(payload, previous_gyro_data, ['gyro_x', 'gyro_y', 'gyro_z'], 5)
 
     # Update previous data
     previous_gyro_data = payload
