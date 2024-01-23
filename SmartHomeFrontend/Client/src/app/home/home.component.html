@@ -4,7 +4,28 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
-  <div class="centeredDiv" style="margin-top: -70px;">
+    <div class="container" style="margin-top: -70px;">
+        <div class="row">
+          <div class="col">
+            <p style="font-weight: bold;">B4SD</p>
+            <div class="rectangle">
+                <p>22:00</p>
+            </div>
+            <button  mat-button>Display current time</button>
+          </div>
+          <div class="col">
+            <h3 style="font-weight: bold;">People inside:</h3>
+            <p class="people-inside">4</p>
+          </div>
+          <div class="col">
+            <p>Sadržaj u trećoj koloni</p>
+          </div>
+          <div class="col">
+            <p>Sadržaj u trećoj koloni</p>
+          </div>
+        </div>
+      </div>
+  <div class="centeredDiv">
   <div fxLayout="row wrap" fxLayoutGap="15px grid" style="width:80%; ">
     <div fxFlex="25%" *ngFor="let device of devices">
         <div [ngSwitch]="device._measurement">
@@ -263,4 +284,7 @@
     </div> 
   </div>
   </div> 
+  <button mat-raised-button class="fixed-button" (click)="openDMSDialog()">DMS</button>
+  <button mat-raised-button class="fixed-button1" (click)="openBIRDialog()">BIR</button>
+  <button mat-raised-button class="fixed-button2" (click)="openAlarmDialog()"><mat-icon >alarm</mat-icon>Alarm</button>
 </body>

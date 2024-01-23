@@ -88,12 +88,27 @@ export class HomeComponent implements OnInit {
       }, 
     })
 
-    this.socket.fromEvent<string>('data')
+    /*this.socket.fromEvent<string>('data')
       .subscribe((message: any) => {
         console.log(message)
       
-      });
+      });*/
    
   }
+
+
+
+  openDMSDialog():void{
+
+  }
+
+  openAlarmDialog():void{
+    
+  }
+
+  openBIRDialog():void{
+    
+  }
+
 
 }

@@ -1,0 +1,10 @@
+.centeredDiv{
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}
+
+
+body {
+    margin-top: 10%;
+}
