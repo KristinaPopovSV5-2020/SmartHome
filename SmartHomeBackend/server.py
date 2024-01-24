@@ -19,10 +19,14 @@ scheduler = APScheduler()
 socketio = SocketIO(app)
 
 system_activated = False
-alarm = False
-sent_alarm = False
+alarm_GSG = False
+door_light = False
+alarm_DS1 = False
+alarm_DS2 = False
+alarm_PIR = False
+turn_on_device = False
 
-
+PIN_ACTIVATED = "1111"
 
 # InfluxDB Configuration
 token = "Km0m8JvdlMfbQrc7LXd5fluhtufT0G8xZXj-5h28C64_vOcPo2Kg4NHNTuGc_7TTP_FfkPFI2xSb70GRaY7TTw=="
@@ -143,6 +147,7 @@ mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
 
 
+
 def database_save(payload, msg):
     print(payload)
     save_to_db(json.loads(msg.decode('utf-8')))
@@ -150,40 +155,49 @@ def database_save(payload, msg):
 
 
 def ds1_ds2_detect(payload, msg):
-    global system_activated,alarm, sent_alarm
+    global system_activated,alarm_DS2, alarm_DS1, turn_on_device
     value = payload['value']
-    if value:
-        if system_activated and alarm and not sent_alarm:
-            sent_alarm = True
-            print("BUZZZZ")
-            socketio.emit('alarm', True)
-            send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
-            time.sleep(0.5)
-            send_mqtt_request({'value': True}, "server/pi1/foyer/db")
-    else:
-        if alarm and sent_alarm:
-            alarm = False
-            sent_alarm = False
-            print("Sound off")
-            socketio.emit('alarm', False)
-            send_mqtt_request({'value': False}, "server/pi3/owners-suite/bb")
-            time.sleep(0.5)
-            send_mqtt_request({'value': False}, "server/pi1/foyer/db")
+    name = payload['name']
+    if not value:
+        if system_activated:
+            if alarm_DS1 or alarm_DS2:
+                print("Sound off")
+                if alarm_DS1:
+                    alarm_DS1 = False
+                    save_to_db_alarm("DS1", False)
+                if alarm_DS2:
+                    alarm_DS2 = False
+                    save_to_db_alarm("DS2", False)
+                socketio.emit('alarm-DS', {'value': False, 'name': name})
+                if turn_on_device:
+                    send_mqtt_request({'value': False}, "server/pi3/owners-suite/bb")
+                    time.sleep(0.5)
+                    send_mqtt_request({'value': False}, "server/pi1/foyer/db")
+                    turn_on_device = False
 
 
 def detect_change_color_rgb(payload, msg):
     socketio.emit('brgb', payload)
 
 def ds1_ds2_duration(payload, msg):
-    global alarm, sent_alarm
-    if not alarm and not sent_alarm:
-        sent_alarm = True
-        alarm = True
-        print("BUZZZZ")
-        socketio.emit('alarm', True)
-        send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
-        time.sleep(0.5)
-        send_mqtt_request({'value': True}, "server/pi1/foyer/db")
+    global alarm_DS1, alarm_DS2, turn_on_device, system_activated
+    name = payload['name']
+    if system_activated:
+        if name == "DS1":
+            if not alarm_DS1:
+                alarm_DS1 = True
+                save_to_db_alarm("DS1", True)
+        else:
+            if not alarm_DS2:
+                alarm_DS2 = True
+                save_to_db_alarm("DS2", True)
+        socketio.emit('alarm-DS', {'value': True, 'name': name})
+        if not turn_on_device:
+            print("BUZZZZ")
+            send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
+            time.sleep(0.5)
+            send_mqtt_request({'value': True}, "server/pi1/foyer/db")
+            turn_on_device = True
 
 
 def send_mqtt_request(payload, mqtt_topic):
@@ -194,37 +208,58 @@ def send_mqtt_request(payload, mqtt_topic):
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
+def turn_off_light():
+    global door_light
+    door_light = False
+    socketio.emit('dl', False)
+
 
 def dms_detect_password(payload, msg):
-    global alarm, system_activated, sent_alarm
-    print(payload)
+    global alarm_DS1,alarm_GSG, alarm_PIR, alarm_DS2, system_activated, turn_on_device
+    password = payload['value'].split("-")[0]
     if payload['value'].split("-")[1] == "True":
-        alarm = False
-        system_activated = False
-        sent_alarm = False
-        print("Sound off")
-        print("System deactivated")
-        socketio.emit('alarm', False)
-        send_mqtt_request({'value': False}, "server/pi3/owners-suite/bb")
-        time.sleep(0.5)
-        send_mqtt_request({'value': False}, "server/pi1/foyer/db")
+        if password == PIN_ACTIVATED:
+            time.sleep(10)
+            system_activated = True
+            print("System activated")
+        else:
+            if alarm_DS1:
+                save_to_db_alarm("DS1", False)
+            if alarm_DS2:
+                save_to_db_alarm("DS2", False)
+            if alarm_PIR:
+                save_to_db_alarm("PIR", False)
+            if alarm_GSG:
+                save_to_db_alarm("GSG", False)
+            system_activated = False
+            alarm_DS1 = False
+            alarm_DS2 = False
+            alarm_GSG = False
+            alarm_PIR = False
+            print("Sound off")
+            print("System deactivated")
+            socketio.emit('system-activated', False)
+            if turn_on_device:
+                send_mqtt_request({'value': False}, "server/pi3/owners-suite/bb")
+                time.sleep(0.5)
+                send_mqtt_request({'value': False}, "server/pi1/foyer/db")
+                turn_on_device = False
 
-    else:
-        time.sleep(10)
-        system_activated = True
-        alarm = True
-        print("System activated")
-        print("Alarm activated")
 
 
 def dpir1_detect_movement(payload, msg):
+    global door_light
     print(payload)
     update_people_inside_dus1()
     if payload["value"]:
-        socketio.emit('dl', True)
-        send_mqtt_request({"value": True}, "server/pi1/coveredPorch/dl")
-        threading.Timer(10, send_mqtt_request, args=({"value": False}, "server/pi1/coveredPorch/dl")).start()
-        socketio.emit('dl', False)
+        if not door_light:
+            socketio.emit('dl', True)
+            door_light = True
+            send_mqtt_request({"value": True}, "server/pi1/coveredPorch/dl")
+            threading.Timer(10, send_mqtt_request, args=({"value": False}, "server/pi1/coveredPorch/dl")).start()
+            threading.Timer(10, turn_off_light, args=()).start()
+
+
 
 
 def dpir2_detect_movement(payload, msg):
@@ -233,20 +268,23 @@ def dpir2_detect_movement(payload, msg):
 
 
 def rpir_detect_movement(payload, msg):
-    global people_inside, alarm, sent_alarm
-    if people_inside == 0:
-        alarm = True
-        if not sent_alarm:
-            sent_alarm = True
-            print("BUZZZZ")
-            socketio.emit('alarm', True)
-            send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
-            time.sleep(0.5)
-            send_mqtt_request({'value': True}, "server/pi1/foyer/db")
+    global people_inside, alarm_PIR, turn_on_device, system_activated
+    if system_activated:
+        if people_inside == 0:
+            if not alarm_PIR:
+                alarm_PIR = True
+                save_to_db_alarm("PIR", True)
+            socketio.emit('alarm-PIR', True)
+            if not turn_on_device:
+                print("BUZZZZ")
+                send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
+                time.sleep(0.5)
+                send_mqtt_request({'value': True}, "server/pi1/foyer/db")
+                turn_on_device = True
 
 
 def update_people_inside_dus1():
-    global people_inside, last_dus1_value, new_dus1_value, alarm, sent_alarm
+    global people_inside, last_dus1_value, new_dus1_value
     with people_inside_lock:
         if last_dus1_value and new_dus1_value < last_dus1_value:
             people_inside += 1
@@ -261,7 +299,7 @@ def update_people_inside_dus1():
 
 
 def update_people_inside_dus2():
-    global people_inside, last_dus2_value, new_dus2_value, alarm, sent_alarm
+    global people_inside, last_dus2_value, new_dus2_value
     with people_inside_lock:
         if last_dus2_value and new_dus2_value < last_dus2_value:
             people_inside += 1
@@ -333,6 +371,7 @@ def turn_on_rgb(payload, msg):
 # ALARM
 def activate_alarm():
     print("Alarm aktiviran")
+    socketio.emit('alarm-oclock', True)
     send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
     time.sleep(2)
     data = {'intermittently': True,
@@ -346,17 +385,19 @@ def set_alarm(alarm_time):
 
 
 def check_and_trigger_alarm_gyro(payload, previous_data, keys, threshold):
-    global alarm, sent_alarm
+    global alarm_GSG, turn_on_device, system_activated
     for key in keys:
-        if abs(payload[key] - previous_data[key]) > threshold:
-            alarm = True
-            if not sent_alarm:
-                sent_alarm = True
+        if abs(payload[key] - previous_data[key]) > threshold and system_activated:
+            if not alarm_GSG:
+                alarm_GSG = True
+                save_to_db_alarm("GSG", True)
+            socketio.emit('alarm-GSG', True)
+            if not turn_on_device:
                 print("BUZZZZ")
-                socketio.emit('alarm', True)
                 send_mqtt_request({'value': True}, "server/pi3/owners-suite/bb")
                 time.sleep(0.5)
                 send_mqtt_request({'value': True}, "server/pi1/foyer/db")
+                turn_on_device = True
 
 def gyro_database_save(payload, msg):
     global previous_gyro_data
@@ -400,6 +441,15 @@ def save_to_db(data):
     )
     write_api.write(bucket=bucket, org=org, record=point)
 
+def save_to_db_alarm(name, value):
+    write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
+    point = (
+        Point("ALARM")
+        .tag("name",name)
+        .field("measurement", value)
+    )
+    write_api.write(bucket=bucket, org=org, record=point)
+
 
 
 
@@ -424,9 +474,9 @@ def cancel_alarm():
     try:
         data = request.get_json()
         print(data)
+        socketio.emit('alarm-oclock', False)
         # salje se vrednost false, da se ne bi vise cuo bb
         send_mqtt_request(data, "server/pi3/owners-suite/bb")
-        print("POSLATO")
         time.sleep(2)
         data_b4sd = {'intermittently': False,
                      'turnOn': False}

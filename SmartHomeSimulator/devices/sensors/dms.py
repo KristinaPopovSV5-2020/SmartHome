@@ -68,7 +68,7 @@ def run_dms_loop(dms,delay, callback, stop_event, publish_event, settings):
             password += code
             if len(password) == 4:
                 is_password = False
-                if settings['password'] == password:
+                if settings['password'] == password or settings['password_act'] == password:
                     is_password = True
                 callback(password,is_password, publish_event, settings)
                 password = ""

@@ -83,7 +83,7 @@ def run_ds(settings, threads, stop_event):
     if settings['simulated']:
         print("Starting " + settings["name"] + " simulator")
         ds1_thread = threading.Thread(target=run_ds_simulator,
-                                      args=(7, ds_callback, stop_event, publish_event, settings))
+                                      args=(3, ds_callback, stop_event, publish_event, settings))
         ds1_thread.start()
         threads.append(ds1_thread)
         print(settings["name"] + " simulator started")

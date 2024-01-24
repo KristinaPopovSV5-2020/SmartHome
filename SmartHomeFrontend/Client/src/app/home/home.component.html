@@ -29,10 +29,34 @@
             <h3 style="font-weight: bold;">BRGB: {{turnOffrgb}}</h3>
             <div [style.backgroundColor]="colorRGB" class="circle"></div>
           </div>
-          <div class="col">
-            <h3 style="font-weight: bold;">Alarm: {{soundOn}}</h3>
+        </div>
+      <div class="row">
+            <div class="col">
+                <h3 style="font-weight: bold;">Alarm DS1: {{soundOnDS1}}</h3>
+                <div style="justify-content: center;text-align: center; color: navy;">
+                    <ng-container *ngIf="soundOnDS1 == true; else nonZeroValue">
+                        <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_up</mat-icon>
+                    </ng-container>
+                    <ng-template #nonZeroValue>
+                        <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_off</mat-icon>
+                    </ng-template>
+                </div>
+        </div>
+        <div class="col">
+            <h3 style="font-weight: bold;">Alarm DS2: {{soundOnDS2}}</h3>
             <div style="justify-content: center;text-align: center; color: navy;">
-                <ng-container *ngIf="soundOn == true; else nonZeroValue">
+                <ng-container *ngIf="soundOnDS2 == true; else nonZeroValue">
+                    <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_up</mat-icon>
+                </ng-container>
+                <ng-template #nonZeroValue>
+                    <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_off</mat-icon>
+                </ng-template>
+            </div>
+    </div>
+        <div class="col">
+            <h3 style="font-weight: bold;">Alarm PIR: {{soundOnPIR}}</h3>
+            <div style="justify-content: center;text-align: center; color: navy;">
+                <ng-container *ngIf="soundOnPIR == true; else nonZeroValue">
                     <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_up</mat-icon>
                 </ng-container>
                 <ng-template #nonZeroValue>
@@ -40,8 +64,30 @@
                 </ng-template>
             </div>
           </div>
+          <div class="col">
+            <h3 style="font-weight: bold;">Alarm GSG: {{soundOnGSG}}</h3>
+            <div style="justify-content: center;text-align: center; color: navy;">
+                <ng-container *ngIf="soundOnGSG == true; else nonZeroValue">
+                    <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_up</mat-icon>
+                </ng-container>
+                <ng-template #nonZeroValue>
+                    <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_off</mat-icon>
+                </ng-template>
+            </div>
+          </div>
+        <div class="col">
+          <h3 style="font-weight: bold;">Alarm o'clock</h3>
+          <div style="justify-content: center;text-align: center; color: navy;">
+              <ng-container *ngIf="soundOn == true; else nonZeroValue">
+                  <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_up</mat-icon>
+              </ng-container>
+              <ng-template #nonZeroValue>
+                  <mat-icon class="centerIcon" style="font-size: 90px;width: 100px;height: 100px;">volume_off</mat-icon>
+              </ng-template>
+          </div>
         </div>
       </div>
+    </div>
   <div class="centeredDiv">
   <div fxLayout="row wrap" fxLayoutGap="15px grid" style="width:75%; ">
     <div fxFlex="25%" *ngFor="let device of devices">
@@ -71,7 +117,7 @@
                     <mat-card-content  style="height: 150px;margin-top: 20px;">
                         <h4 style="margin-top: -15px;">Runs on: {{device.runs_on}}</h4>
                         <h4 style="margin-top: -15px;">Simulated: {{device.simulated}}</h4>
-                        <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> <ng-container *ngIf="device._value === 0; else nonZeroValue">
+                        <h2><mat-icon class="centerIcon">wb_incandescent</mat-icon> <ng-container *ngIf="!lightDL; else nonZeroValue">
                             {{ 'Light off' }}
                         </ng-container>
                         <ng-template #nonZeroValue>

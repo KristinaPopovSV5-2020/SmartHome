@@ -66,7 +66,7 @@ def handle_dms_message(payload, dms_settings):
 
 def run_dms_sim(dms_settings, code):
     is_password = False
-    if code == dms_settings['password']:
+    if code == dms_settings['password'] or code == dms_settings['password_act']:
         is_password = True
     dms_callback(code, is_password, publish_event, dms_settings)
 

@@ -59,8 +59,8 @@ def dl_callback(turnOn, publish_event, dl_settings, verbose=True):
 
 
 def handle_dl_message(payload, dl_settings):
-    print("Svetlo se uplaio")
     turn_on = payload.get("value", False)
+    print("Svetlo se :" +  str(turn_on))
     run_dl(dl_settings, turn_on)
 
 

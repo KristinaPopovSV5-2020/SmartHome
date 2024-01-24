@@ -46,13 +46,20 @@ export class HomeComponent implements OnInit {
   public peopleCount = 0;
 
   public soundOn = false;
+  public soundOnDS1 = false;
+  public soundOnDS2 = false;
+  public soundOnPIR = false;
+  public soundOnGSG = false;
+
+  public lightDL = false;
+
   public b4sd = "00:00"
 
   public colorRGB  = "white";
   public turnOffrgb = ""
 
 
-  isButtonEnableCancelAlarm: boolean = true;
+  isButtonEnableCancelAlarm: boolean = false;
 
 
 
@@ -91,11 +98,8 @@ export class HomeComponent implements OnInit {
 
       this.socket.fromEvent<string>('dl')
       .subscribe((message: any) => {
-        for (let d of this.devices){
-          if (d._measurement === "DL"){
-            d._value = message.value;
-          }
-        }
+        console.log(message);
+          this.lightDL = message;
       });
 
 
@@ -104,9 +108,57 @@ export class HomeComponent implements OnInit {
         this.peopleCount = message;
       });
 
-    this.socket.fromEvent<string>('alarm')
+    this.socket.fromEvent<string>('system-activated')
       .subscribe((message: any) => {
-        this.soundOn = message == true;
+        this.soundOnDS1 = false;
+        this.soundOnDS2 = false;
+        this.soundOnPIR = false;
+        this.soundOnGSG = false;
+        this.displayCurrentTime();
+      });
+
+      this.socket.fromEvent<string>('alarm-DS')
+      .subscribe((message: any) => {
+        if (message.name === 'DS1'){
+          this.soundOnDS1 = message.value
+          
+        }else{
+          this.soundOnDS2 = message.value
+        }
+        this.displayCurrentTime();
+      });
+
+      this.socket.fromEvent<string>('alarm-PIR')
+      .subscribe((message: any) => {
+        if (message == true){
+          this.soundOnPIR = true;
+        }else{
+          this.soundOnPIR = false;
+        }
+        this.displayCurrentTime();
+      });
+
+      this.socket.fromEvent<string>('alarm-GSG')
+      .subscribe((message: any) => {
+        if (message == true){
+          this.soundOnGSG = true;
+        }else{
+          this.soundOnGSG = false;
+        }
+        this.displayCurrentTime();
+      });
+
+      this.socket.fromEvent<string>('alarm-oclock')
+      .subscribe((message: any) => {
+        if (message == true){
+          this.isButtonEnableCancelAlarm = true;
+          this.soundOn = true;
+
+        }else{
+          this.soundOn = false;
+          this.isButtonEnableCancelAlarm = false;
+        }
+        
         this.displayCurrentTime();
       });
 
