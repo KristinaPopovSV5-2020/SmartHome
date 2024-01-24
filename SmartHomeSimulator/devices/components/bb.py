@@ -82,6 +82,9 @@ def run_bb(settings):
     if settings['simulated']:
         from devices.actuators.bedroom_buzzer import buzz, sim_buzz
         sim_buzz(settings)
+    elif settings['jingle']:
+        from devices.actuators.jingle.play import buzz
+        buzz(settings)
     else:
         from devices.actuators.bedroom_buzzer import buzz
         buzz(settings)

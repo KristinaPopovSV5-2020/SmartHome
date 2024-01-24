@@ -19,6 +19,7 @@
       "simulated": true,
       "runs_on": "PI3",
       "topic": "home/owners-suite/bb",
+      "jingle": true,
       "pin": 22,
       "pitch": 440,
       "duration": 0.1
