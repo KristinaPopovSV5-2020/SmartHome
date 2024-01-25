@@ -6,6 +6,8 @@ try:
 except:
     pass
 
+
+password = ""
 class DMS(object):
     def __init__(self, r1, r2, r3, r4, c1,c2,c3,c4, name):
         self.R1 = r1
@@ -54,8 +56,8 @@ def extract_non_none_value(values):
 
 
 def run_dms_loop(dms,delay, callback, stop_event, publish_event, settings):
+    global password
     dms.setup_gpio()
-    password = ""
     while True:
         values = (
             dms.read_line(dms.R1, ["1", "2", "3", "A"]),

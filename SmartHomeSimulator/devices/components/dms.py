@@ -78,7 +78,7 @@ def run_dms(settings, threads, stop_event):
         dms = DMS(settings["R1"], settings["R2"], settings["R3"], settings["R4"], settings["C1"], settings["C2"],
                   settings["C3"], settings["C4"], settings["name"])
         dms_thread = threading.Thread(target=run_dms_loop,
-                                      args=(dms, 2, dms_callback, stop_event, publish_event, settings))
+                                      args=(dms, 0.5, dms_callback, stop_event, publish_event, settings))
         dms_thread.start()
         threads.append(dms_thread)
         print(settings["name"] + " loop started")

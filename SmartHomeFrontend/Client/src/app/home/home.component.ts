@@ -106,6 +106,7 @@ export class HomeComponent implements OnInit {
     this.socket.fromEvent<string>('people')
       .subscribe((message: any) => {
         this.peopleCount = message;
+        this.displayCurrentTime();
       });
 
     this.socket.fromEvent<string>('system-activated')
@@ -114,7 +115,6 @@ export class HomeComponent implements OnInit {
         this.soundOnDS2 = false;
         this.soundOnPIR = false;
         this.soundOnGSG = false;
-        this.displayCurrentTime();
       });
 
       this.socket.fromEvent<string>('alarm-DS')
@@ -125,7 +125,6 @@ export class HomeComponent implements OnInit {
         }else{
           this.soundOnDS2 = message.value
         }
-        this.displayCurrentTime();
       });
 
       this.socket.fromEvent<string>('alarm-PIR')
@@ -135,7 +134,6 @@ export class HomeComponent implements OnInit {
         }else{
           this.soundOnPIR = false;
         }
-        this.displayCurrentTime();
       });
 
       this.socket.fromEvent<string>('alarm-GSG')
@@ -145,7 +143,6 @@ export class HomeComponent implements OnInit {
         }else{
           this.soundOnGSG = false;
         }
-        this.displayCurrentTime();
       });
 
       this.socket.fromEvent<string>('alarm-oclock')
@@ -159,7 +156,6 @@ export class HomeComponent implements OnInit {
           this.isButtonEnableCancelAlarm = false;
         }
         
-        this.displayCurrentTime();
       });
 
       
